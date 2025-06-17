@@ -15,15 +15,18 @@ import { MatButtonModule } from '@angular/material/button';
     styleUrl: './category-edit.component.scss'
 })
 export class CategoryEditComponent implements OnInit {
-    category: Category;
+    category!: Category;
 
     constructor(
         public dialogRef: MatDialogRef<CategoryEditComponent>,
+        @Inject(MAT_DIALOG_DATA) public data: {category : Category},
         private categoryService: CategoryService
     ) {}
 
     ngOnInit(): void {
-        this.category = new Category();
+        // Make sure Category is a class with a constructor in ../model/Category
+        this.category = this.data.category != null ? this.data.category : new Category();
+        this.category = this.data.category ? Object.assign({}, this.data.category) : new Category();
     }
 
     onSave() {

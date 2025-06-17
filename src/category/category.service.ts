@@ -14,11 +14,11 @@ export class CategoryService {
     return of(CATEGORY_DATA);
   }
 
-  saveCategory(category: Category): Observable<any> { //TODO: should return Observable<Category>
+  saveCategory(category: Category): Observable<any> { //Observable<Category>
     return of(null);
   }
 
-  deleteCategory(idCategory : number): Observable<any> {
+  deleteCategory(idCategory : number | undefined): Observable<any> {
     return of(null);
   }
 }

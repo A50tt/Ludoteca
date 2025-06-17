@@ -10,4 +10,4 @@ export const CATEGORY_DATA: Category[] = [
     { id: 7, name: 'Europeos' },
     { id: 8, name: 'Guerra' },
     { id: 9, name: 'Abstractos' },
-]    
+]

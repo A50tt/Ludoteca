@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author ccsw
@@ -37,7 +38,10 @@ public class GameController {
     @RequestMapping(path = "", method = RequestMethod.GET)
     public List<GameDto> find(@RequestParam(value = "title", required = false) String title, @RequestParam(value = "idCategory", required = false) Long idCategory) {
 
-        return null;
+        List<Game> games = gameService.find(title, idCategory);
+
+        return games.stream().map(e -> mapper.map(e, GameDto.class)).collect(Collectors.toList());
+
     }
 
     /**

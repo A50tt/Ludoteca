@@ -24,7 +24,6 @@ export class CategoryEditComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        // Make sure Category is a class with a constructor in ../model/Category
         this.category = this.data.category != null ? this.data.category : new Category();
         this.category = this.data.category ? Object.assign({}, this.data.category) : new Category();
     }

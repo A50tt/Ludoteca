@@ -34,7 +34,10 @@ export class CategoryListComponent implements OnInit {
 
     ngOnInit(): void {
         this.categoryService.getCategories().subscribe(
-            categories => this.dataSource.data = categories
+            (categories) => {
+                this.dataSource.data = categories;
+                console.log(this.dataSource.data.toString());
+            }
         );
     }
 

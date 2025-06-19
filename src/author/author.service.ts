@@ -10,7 +10,7 @@ import { AUTHOR_DATA_LIST } from './model/mock-authors-list';
     providedIn: 'root',
 })
 export class AuthorService {
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) { }
 
     private baseUrl = 'http://localhost:8080/author';
 
@@ -29,6 +29,6 @@ export class AuthorService {
     }
 
     getAllAuthors(): Observable<Author[]> {
-        return of(AUTHOR_DATA_LIST);
+        return this.http.get<Author[]>(this.baseUrl);
     }
 }

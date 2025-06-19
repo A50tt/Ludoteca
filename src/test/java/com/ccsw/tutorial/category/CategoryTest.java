@@ -25,6 +25,10 @@ public class CategoryTest {
     @InjectMocks
     private CategoryServiceImpl categoryService;
 
+    public static final String CATEGORY_NAME = "CAT1";
+
+    public static final Long EXISTS_CATEGORY_ID = 1L;
+
     @Test
     public void findAllShouldReturnAllCategories() {
 
@@ -38,8 +42,6 @@ public class CategoryTest {
         assertNotNull(categories);
         assertEquals(1, categories.size());
     }
-
-    public static final String CATEGORY_NAME = "CAT1";
 
     @Test
     public void saveNotExistsCategoryIdShouldInsert() {
@@ -55,8 +57,6 @@ public class CategoryTest {
 
         assertEquals(CATEGORY_NAME, category.getValue().getName());
     }
-
-    public static final Long EXISTS_CATEGORY_ID = 1L;
 
     @Test
     public void saveExistsCategoryIdShouldUpdate() {

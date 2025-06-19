@@ -25,6 +25,13 @@ public class CategoryIT {
     public static final String LOCALHOST = "http://localhost:";
     public static final String SERVICE_PATH = "/category";
 
+    public static final Long NEW_CATEGORY_ID = 4L;
+    public static final String NEW_CATEGORY_NAME = "CAT4";
+
+    public static final Long MODIFY_CATEGORY_ID = 3L;
+
+    public static final Long DELETE_CATEGORY_ID = 2L;
+
     @LocalServerPort
     private int port;
 
@@ -43,9 +50,6 @@ public class CategoryIT {
         assertEquals(3, response.getBody().size());
     }
 
-    public static final Long NEW_CATEGORY_ID = 4L;
-    public static final String NEW_CATEGORY_NAME = "CAT4";
-
     @Test
     public void saveWithoutIdShouldCreateNewCategory() {
 
@@ -62,8 +66,6 @@ public class CategoryIT {
         assertNotNull(categorySearch);
         assertEquals(NEW_CATEGORY_NAME, categorySearch.getName());
     }
-
-    public static final Long MODIFY_CATEGORY_ID = 3L;
 
     @Test
     public void modifyWithExistIdShouldModifyCategory() {
@@ -93,8 +95,6 @@ public class CategoryIT {
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
-
-    public static final Long DELETE_CATEGORY_ID = 2L;
 
     @Test
     public void deleteWithExistsIdShouldDeleteCategory() {

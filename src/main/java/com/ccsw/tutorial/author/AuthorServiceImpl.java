@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author ccsw
  *
@@ -26,6 +28,15 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public Author get(Long id) {
         return this.authorRepository.findById(id).orElse(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Author> findAll() {
+
+        return (List<Author>) this.authorRepository.findAll();
     }
 
     /**

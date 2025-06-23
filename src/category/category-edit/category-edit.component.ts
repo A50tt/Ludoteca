@@ -6,16 +6,17 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { NgIf } from '@angular/common';
 
 @Component({
     selector: 'app-category-edit',
     standalone: true,
-    imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule ],
+    imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, NgIf ],
     templateUrl: './category-edit.component.html',
     styleUrl: './category-edit.component.scss'
 })
 export class CategoryEditComponent implements OnInit {
-    category!: Category;
+    category!: Category
 
     constructor(
         public dialogRef: MatDialogRef<CategoryEditComponent>,
@@ -29,7 +30,7 @@ export class CategoryEditComponent implements OnInit {
     }
 
     onSave() {
-        this.categoryService.saveCategory(this.category).subscribe(() => {
+        this.categoryService.saveCategory(this.category).subscribe((result) => {
             this.dialogRef.close();
         });
     }

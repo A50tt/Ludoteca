@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 @Component({
     selector: 'app-author-edit',
     standalone: true,
-    imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule ],
+    imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
     templateUrl: './author-edit.component.html',
     styleUrl: './author-edit.component.scss',
 })
@@ -21,7 +21,7 @@ export class AuthorEditComponent implements OnInit {
         public dialogRef: MatDialogRef<AuthorEditComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any,
         private authorService: AuthorService
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         this.author = this.data.author ? Object.assign({}, this.data.author) : new Author();

@@ -32,8 +32,9 @@ import { GameService } from '../../game/game.service';
     CommonModule
   ],
   templateUrl: './loan-edit.component.html',
-  styleUrl: './loan-edit.component.scss'
+  styleUrl: './loan-edit.component.scss',
 })
+
 export class LoanEditComponent implements OnInit {
   loan!: Loan;
   registeredClients!: Observable<Client[]>
@@ -55,8 +56,13 @@ export class LoanEditComponent implements OnInit {
   }
 
   onSave() {
-    this.loanService.saveLoan(this.loan).subscribe(() => {
-      this.dialogRef.close();
+    this.loanService.saveLoan(this.loan).subscribe({
+      next: (result) => {
+        this.dialogRef.close();
+      },
+      error: (err) => {
+        
+      }
     });
   }
 

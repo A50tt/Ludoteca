@@ -45,9 +45,7 @@ export class AuthorListComponent implements OnInit {
         };
 
         if (event != null) {
-            console.log(event.pageSize);
             pageable.pageSize = event.pageSize;
-            console.log(event.pageIndex);
             pageable.pageNumber = event.pageIndex;
         }
 

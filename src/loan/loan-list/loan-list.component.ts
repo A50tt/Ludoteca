@@ -10,6 +10,7 @@ import { LoanService } from '../loan.service';
 import { Pageable } from '../../core/model/page/Pageable';
 import { LoanEditComponent } from '../loan-edit/loan-edit.component';
 import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dialog-confirmation.component';
+import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
 
 @Component({
   selector: 'app-loan-list',
@@ -45,9 +46,7 @@ export class LoanListComponent {
     };
 
     if (event != null) {
-      console.log(event.pageSize);
       pageable.pageSize = event.pageSize;
-      console.log(event.pageIndex);
       pageable.pageNumber = event.pageIndex;
     }
 
@@ -56,6 +55,7 @@ export class LoanListComponent {
       this.pageNumber = data.pageable.pageNumber;
       this.pageSize = data.pageable.pageSize;
       this.totalElements = data.totalElements;
+      console.log(this.dataSource.data);
     });
   }
 
@@ -71,19 +71,32 @@ export class LoanListComponent {
 
   deleteLoan(loan: Loan) {
     const dialogRef = this.dialog.open(DialogConfirmationComponent, {
-                data: {
-                    title: 'Eliminar préstamo',
-                    description:
-                        'Atención, si borra el préstamo se perderán sus datos.<br> ¿Desea eliminar el préstamo?',
-                },
+      data: {
+        title: 'Eliminar préstamo',
+        description:
+          'Atención, si borra el préstamo se perderán sus datos.<br> ¿Desea eliminar el préstamo?',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        console.log("Result", result);
+        this.loanService.deleteLoan(loan.id).subscribe({
+          next: (response) => {
+            console.log("Response", response);
+            this.ngOnInit(); // Reload the list
+          },
+          error: (err) => {
+            console.log("Err", err)
+            this.dialog.open(DialogMessageComponent, {
+              data: {
+                title: err.error?.message || 'Error inesperado',
+                description: err.error?.extendedMessage || 'No se pudo eliminar el préstamo. Por favor, inténtelo más tarde.',
+              },
             });
-    
-            dialogRef.afterClosed().subscribe((result) => {
-                if (result) {
-                    this.loanService.deleteLoan(loan.id).subscribe((result) => {
-                        this.ngOnInit();
-                    });
-                }
-            });
+          },
+        });
+      }
+    });
   }
 }

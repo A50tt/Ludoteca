@@ -30,19 +30,39 @@
         <mat-label>Fechas de préstamo</mat-label>
 
         <div class="date-fields">
+            <!--<mat-form-field>
+                <mat-label>Fecha de préstamo</mat-label>
+                
+                <input matInput type="date" [matDatepicker]="picker" placeholder="Fecha de préstamo" [(ngModel)]="loan.startDate"
+                    name="startDate" required>
+                    <mat-datepicker-toggle matIconSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #startDatePicker></mat-datepicker>
+                    <mat-error>La fecha de inicio no puede estar vacía</mat-error>
+            </mat-form-field>
+-->
+
             <mat-form-field>
                 <mat-label>Fecha de préstamo</mat-label>
-                <input type="date" matInput placeholder="Fecha de préstamo" [(ngModel)]="loan.startDate"
-                    name="startDate" required>
+                <input matInput [matDatepicker]="startDatePicker" [(ngModel)]="loan.startDate" name="startDate"
+                    required>
+                <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #startDatePicker></mat-datepicker>
                 <mat-error>La fecha de inicio no puede estar vacía</mat-error>
             </mat-form-field>
 
+
+
+            <!--
             <mat-form-field>
                 <mat-label>Fecha de devolución</mat-label>
                 <input type="date" matInput placeholder="Fecha de devolución" [(ngModel)]="loan.endDate" name="endDate"
                     required>
+                <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #endDatePicker></mat-datepicker>
                 <mat-error>La fecha de devolución no puede estar vacía</mat-error>
             </mat-form-field>
+            -->
+
         </div>
     </form>
 

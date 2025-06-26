@@ -3,7 +3,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { LoanService } from '../loan.service';
 import { Loan } from '../model/Loan';
-import { FormsModule} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -15,7 +15,11 @@ import { CommonModule, NgFor } from '@angular/common';
 import { ClientService } from '../../client/client.service';
 import { Observable } from 'rxjs';
 import { GameService } from '../../game/game.service';
-
+import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MY_DP_FORMAT } from './date-picker/date-picker';
+import { MAT_DATE_FORMATS } from '@angular/material/core';
 
 
 @Component({
@@ -29,10 +33,20 @@ import { GameService } from '../../game/game.service';
     MatButtonModule,
     MatSelectModule,
     NgFor,
-    CommonModule
+    CommonModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatFormFieldModule,
+    MatInputModule,
   ],
   templateUrl: './loan-edit.component.html',
   styleUrl: './loan-edit.component.scss',
+  providers: [
+    provideNativeDateAdapter(),
+    MatDatepickerModule,
+    { provide: MAT_DATE_FORMATS, useValue: MY_DP_FORMAT },
+    { provide: MY_DP_FORMAT, useValue: 'es-ES' }, // Spanish locale
+  ]
 })
 
 export class LoanEditComponent implements OnInit {
@@ -45,7 +59,11 @@ export class LoanEditComponent implements OnInit {
     private loanService: LoanService,
     private clientService: ClientService,
     private gameService: GameService,
-  ) { }
+    private dateAdapter: DateAdapter<Date>
+  ) {
+    this.dateAdapter.setLocale('es-ES'); // Explicitly set the locale
+    console.log('Locale set to es-ES');
+  }
 
   ngOnInit(): void {
     this.loan = new Loan();
@@ -61,7 +79,7 @@ export class LoanEditComponent implements OnInit {
         this.dialogRef.close();
       },
       error: (err) => {
-        
+        console.log("ERROR! MEEH", err)
       }
     });
   }

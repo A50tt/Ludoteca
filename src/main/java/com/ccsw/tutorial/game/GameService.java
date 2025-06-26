@@ -1,7 +1,9 @@
 package com.ccsw.tutorial.game;
 
+import com.ccsw.tutorial.dto.StatusResponse;
 import com.ccsw.tutorial.game.model.Game;
 import com.ccsw.tutorial.game.model.GameDto;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -26,13 +28,6 @@ public interface GameService {
      * @param id PK de la entidad
      * @param dto datos de la entidad
      */
-    void save(Long id, GameDto dto);
-
-    /**
-     * Recupera los juegos filtrando por autor
-     *
-     * @param idAuthor PK de la entidad Author
-     */
-    List<Game> findGamesByAuthor(Long idAuthor);
+    ResponseEntity<StatusResponse> save(Long id, GameDto dto);
 
 }

@@ -18,3 +18,5 @@ Credit to the creators:
    raíz de la necesidad de comunicar al front exactamente qué error hay en la validación de Loan, para resaltar el
    componente específico de la Form. ¿Es correcto este enfoque?
 2. Añadida alerta general después de cada operación que da al usuario retroacción.
+BUGS CONOCIDOS:
+1. Si se crea/borra/modifica seguido, los alerts se fusionan y no queda estético.

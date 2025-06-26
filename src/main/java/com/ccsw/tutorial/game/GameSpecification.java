@@ -31,7 +31,10 @@ public class GameSpecification implements Specification<Game> {
 
     private Path<String> getPath(Root<Game> root) {
         String key = criteria.getKey();
-        String[] split = key.split("[.]", 0);
+        if (key == null) {
+            throw new IllegalArgumentException("Search criteria key cannot be null");
+        }
+        String[] split = key.split("[.]");
 
         Path<String> expression = root.get(split[0]);
         for (int i = 1; i < split.length; i++) {

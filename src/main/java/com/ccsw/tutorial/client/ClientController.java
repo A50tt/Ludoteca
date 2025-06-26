@@ -2,10 +2,12 @@ package com.ccsw.tutorial.client;
 
 import com.ccsw.tutorial.client.model.Client;
 import com.ccsw.tutorial.client.model.ClientDto;
+import com.ccsw.tutorial.dto.StatusResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,11 +18,14 @@ import java.util.stream.Collectors;
 @RestController
 @CrossOrigin(origins = "*")
 public class ClientController {
-    @Autowired
-    ClientService clientService;
+    private final ClientService clientService;
 
-    @Autowired
-    ModelMapper mapper;
+    private final ModelMapper mapper;
+
+    public ClientController(ClientService clientService, ModelMapper mapper) {
+        this.clientService = clientService;
+        this.mapper = mapper;
+    }
 
     /**
      * Método para recuperar todos los {@link Client}
@@ -42,9 +47,9 @@ public class ClientController {
      * @param id PK de la entidad
      * @param dto datos de la entidad
      */
-    @Operation(summary = "Save", description = "Method that saves a Client")
+    @Operation(summary = "Save", description = "Method that saves or updates a Client")
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
-    public boolean save(@PathVariable(name = "id", required = false) Long id, @RequestBody ClientDto dto) {
+    public ResponseEntity<StatusResponse> save(@PathVariable(name = "id", required = false) Long id, @RequestBody ClientDto dto) {
         return clientService.save(id, dto);
     }
 
@@ -55,7 +60,7 @@ public class ClientController {
      */
     @Operation(summary = "Delete", description = "Method that deletes a Category")
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable("id") Long id) throws Exception {
-        this.clientService.delete(id);
+    public ResponseEntity<StatusResponse> delete(@PathVariable("id") Long id) throws Exception {
+        return this.clientService.delete(id);
     }
 }

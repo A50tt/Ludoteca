@@ -2,6 +2,8 @@ package com.ccsw.tutorial.category;
 
 import com.ccsw.tutorial.category.model.Category;
 import com.ccsw.tutorial.category.model.CategoryDto;
+import com.ccsw.tutorial.dto.StatusResponse;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -32,13 +34,13 @@ public interface CategoryService {
      * @param id PK de la entidad
      * @param dto datos de la entidad
      */
-    void save(Long id, CategoryDto dto);
+    ResponseEntity<StatusResponse> save(Long id, CategoryDto dto);
 
     /**
      * Método para borrar una {@link Category}
      *
      * @param id PK de la entidad
      */
-    void delete(Long id) throws Exception;
+    ResponseEntity<StatusResponse> delete(Long id) throws Exception;
 
 }

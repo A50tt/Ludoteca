@@ -3,8 +3,13 @@ package com.ccsw.tutorial.client;
 import com.ccsw.tutorial.client.model.Client;
 import com.ccsw.tutorial.client.model.ClientDto;
 import com.ccsw.tutorial.common.criteria.SearchCriteria;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ccsw.tutorial.common.exception.CommonException;
+import com.ccsw.tutorial.dto.StatusResponse;
+import com.ccsw.tutorial.loan.model.Loan;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,8 +17,17 @@ import java.util.List;
 @Service
 public class ClientServiceImpl implements ClientService {
 
-    @Autowired
-    ClientRepository clientRepository;
+    private final String CREATION_SUCCESSFUL_EXT_MSG = "El cliente se ha creado";
+    private final String EDIT_SUCCESSFUL_EXT_MSG = "El cliente se ha modificado";
+    private final String DELETE_SUCCESSFUL_EXT_MSG = "El cliente se ha eliminado";
+
+    private final ClientRepository clientRepository;
+    private final ClientLoanHelperService helper;
+
+    public ClientServiceImpl(ClientRepository clientRepository, ClientLoanHelperService helper) {
+        this.clientRepository = clientRepository;
+        this.helper = helper;
+    }
 
     /**
      * {@inheritDoc}
@@ -35,25 +49,36 @@ public class ClientServiceImpl implements ClientService {
      * {@inheritDoc}
      */
     @Override
-    public boolean save(Long id, ClientDto dto) {
+    public ResponseEntity<StatusResponse> save(Long id, ClientDto dto) {
+        // Tenemos en cuenta si es edición o creación de Client para devolver el mensaje correspondiente.
         Client client;
+        boolean isUpdate = false;
 
         Specification<Client> nameSpec = new ClientSpecification(new SearchCriteria("name", ":", dto.getName()));
-        if (clientRepository.exists(nameSpec)) {
-            //Client 'name' already exists in DB.
-            System.out.println("Nombre " + dto.getName() + " ya existe!");
-            return false;
+        Specification<Client> spec = Specification.where(nameSpec);
+        if (!clientRepository.findAll(spec).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(ClientException.NAME_ALREADY_EXISTS, ClientException.NAME_ALREADY_EXISTS_EXTENDED));
+        }
+        if (id == null) {
+            client = new Client();
         } else {
-            //Client 'name' does not exist already in DB
-            if (id == null) {
-                client = new Client();
-            } else {
-                client = this.get(id);
+            client = this.get(id);
+            if (client != null) {
+                isUpdate = true;
             }
-            client.setName(dto.getName());
+        }
 
-            clientRepository.save(client);
-            return true;
+        // client.setName(dto.getName());
+        BeanUtils.copyProperties(dto, client, "id");
+
+        try {
+            this.clientRepository.save(client);
+            if (isUpdate) {
+                return ResponseEntity.status(HttpStatus.OK).body(new StatusResponse(StatusResponse.OK_REQUEST_MSG, EDIT_SUCCESSFUL_EXT_MSG));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(new StatusResponse(StatusResponse.OK_REQUEST_MSG, CREATION_SUCCESSFUL_EXT_MSG));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
         }
     }
 
@@ -61,10 +86,24 @@ public class ClientServiceImpl implements ClientService {
      * {@inheritDoc}
      */
     @Override
-    public void delete(Long id) throws Exception {
-        if (this.get(id) == null) {
-            throw new Exception("Not exists");
+    public ResponseEntity<StatusResponse> delete(Long id) throws Exception {
+        // Check if client exists
+        if (clientRepository.findById(id).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new StatusResponse(ClientException.CLIENT_ID_NOT_FOUND, ClientException.CLIENT_ID_NOT_FOUND_EXTENDED));
+
         }
-        clientRepository.deleteById(id);
+        if (helper.findLoansByClient(id)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new StatusResponse(ClientException.CLIENT_HAS_GAMES, ClientException.CLIENT_HAS_GAMES_EXTENDED));
+        }
+        try {
+            clientRepository.deleteById(id);
+            return ResponseEntity.ok()
+                    .body(new StatusResponse(StatusResponse.OK_REQUEST_MSG, DELETE_SUCCESSFUL_EXT_MSG));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
+        }
     }
 }

@@ -1,12 +1,11 @@
 package com.ccsw.tutorial.loan;
 
 import com.ccsw.tutorial.common.criteria.SearchCriteria;
-import com.ccsw.tutorial.game.model.Game;
 import com.ccsw.tutorial.loan.model.Loan;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.Calendar;
+import java.time.LocalDate;
 
 public class LoanSpecification implements Specification<Loan> {
 
@@ -21,17 +20,24 @@ public class LoanSpecification implements Specification<Loan> {
     @Override
     public Predicate toPredicate(Root<Loan> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
         Path<?> path = getPath(root);
-        if (criteria.getOperation().equalsIgnoreCase("eq") && criteria.getValue() != null) {
-            System.out.println(path.getJavaType());
-            if (path.getJavaType().equals(Game.class)) {
-                Predicate p = builder.equal(path, criteria.getValue());
+        //        if (criteria.getOperation().equalsIgnoreCase("eq") && criteria.getValue() != null) {
+        //            if (path.getJavaType().equals(Game.class) || path.getJavaType().equals(Client.class)) {
+        //                Predicate p = builder.equal(path, criteria.getValue());
+        //                return builder.equal(path, criteria.getValue());
+        //            }
+        //        }
+        if (criteria.getOperation().equalsIgnoreCase(":") && criteria.getValue() != null) {
+            if (path.getJavaType().equals(Long.class)) {
+                Predicate p = builder.equal(path, ((Long) criteria.getValue()));
                 return builder.equal(path, criteria.getValue());
             }
         }
-        if (criteria.getOperation().equals("<=") && criteria.getValue() != null) {
-            return builder.lessThanOrEqualTo((Path<Calendar>) path, (Calendar) criteria.getValue());
-        } else if (criteria.getOperation().equals(">=") && criteria.getValue() != null) {
-            return builder.greaterThanOrEqualTo((Path<Calendar>) path, (Calendar) criteria.getValue());
+        if (path.getJavaType().equals(LocalDate.class)) {
+            if (criteria.getOperation().equals("<=") && criteria.getValue() != null) {
+                return builder.lessThanOrEqualTo((Path<LocalDate>) path, (LocalDate) criteria.getValue());
+            } else if (criteria.getOperation().equals(">=") && criteria.getValue() != null) {
+                return builder.greaterThanOrEqualTo((Path<LocalDate>) path, (LocalDate) criteria.getValue());
+            }
         }
         return null;
     }

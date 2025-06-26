@@ -3,7 +3,9 @@ package com.ccsw.tutorial.author;
 import com.ccsw.tutorial.author.model.Author;
 import com.ccsw.tutorial.author.model.AuthorDto;
 import com.ccsw.tutorial.author.model.AuthorSearchDto;
+import com.ccsw.tutorial.dto.StatusResponse;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -42,13 +44,13 @@ public interface AuthorService {
      * @param id PK de la entidad
      * @param dto datos de la entidad
      */
-    void save(Long id, AuthorDto dto);
+    ResponseEntity<StatusResponse> save(Long id, AuthorDto dto);
 
     /**
      * Método para crear o actualizar un {@link Author}
      *
      * @param id PK de la entidad
      */
-    void delete(Long id) throws Exception;
+    ResponseEntity<StatusResponse> delete(Long id) throws Exception;
 
 }

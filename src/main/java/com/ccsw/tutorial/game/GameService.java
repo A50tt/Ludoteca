@@ -28,4 +28,11 @@ public interface GameService {
      */
     void save(Long id, GameDto dto);
 
+    /**
+     * Recupera los juegos filtrando por autor
+     *
+     * @param idAuthor PK de la entidad Author
+     */
+    List<Game> findGamesByAuthor(Long idAuthor);
+
 }

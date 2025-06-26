@@ -16,15 +16,8 @@ public class LoanException extends Exception {
     public static String GAME_ALREADY_LENT_EXTENDED = "El juego ya está prestado para esas fechas.";
 
     public static String LOAN_LIMIT_EXCEEDED = "ERROR_GAME_LIMIT_EXCEEDED";
-    public static String LOAN_LIMIT_EXCEEDED_EXTENDED = "Un cliente no puede tener más de dos juegos prestados en una misma fecha.";
+    public static String LOAN_LIMIT_EXCEEDED_EXTENDED = "El cliente no puede tener más de dos juegos prestados en un mismo día.";
 
-    public static String DEFAULT_ERROR = "UNKNOWN_ERROR";
-    public static String DEFAULT_ERROR_EXTENDED = "Something went wrong.";
-
-    private final String msg;
-
-    public LoanException(String errorMsg) {
-        super();
-        this.msg = errorMsg;
-    }
+    public static String ID_NOT_EXIST = "ERROR_ID_DOES_NOT_EXIST";
+    public static String ID_NOT_EXIST_EXTENDED = "El ID proporcionado no existe en la base de datos.";
 }

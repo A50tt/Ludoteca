@@ -29,7 +29,7 @@ INSERT INTO client(name) VALUES ('Cliente 6');
 INSERT INTO client(name) VALUES ('Cliente 7');
 
 -- Mock of LOAN:
-INSERT INTO loan(game_id, client_id, start_date, end_date) VALUES (1, 1, '2025-06-01', '2025-06-10');
+INSERT INTO loan(game_id, client_id, start_date, end_date) VALUES (1, 1, '2025-12-13', '2025-12-20');
 INSERT INTO loan(game_id, client_id, start_date, end_date) VALUES (2, 2, '2025-06-05', '2025-06-12');
 INSERT INTO loan(game_id, client_id, start_date, end_date) VALUES (3, 3, '2025-06-03', '2025-06-13');
 INSERT INTO loan(game_id, client_id, start_date, end_date) VALUES (4, 4, '2025-06-08', '2025-06-20');

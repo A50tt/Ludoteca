@@ -56,4 +56,12 @@ public class GameServiceImpl implements GameService {
 
         this.gameRepository.save(game);
     }
+
+    @Override
+    public List<Game> findGamesByAuthor(Long idAuthor) {
+        GameSpecification authorSpec = new GameSpecification(new SearchCriteria("author_id", ":", idAuthor));
+
+        Specification<Game> spec = Specification.where(authorSpec);
+        return gameRepository.findAll(spec);
+    }
 }

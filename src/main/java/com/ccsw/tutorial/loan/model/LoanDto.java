@@ -3,7 +3,7 @@ package com.ccsw.tutorial.loan.model;
 import com.ccsw.tutorial.client.model.Client;
 import com.ccsw.tutorial.game.model.Game;
 
-import java.util.Calendar;
+import java.time.LocalDate;
 
 public class LoanDto {
 
@@ -13,9 +13,9 @@ public class LoanDto {
 
     private Client client;
 
-    private Calendar startDate;
+    private LocalDate startDate;
 
-    private Calendar endDate;
+    private LocalDate endDate;
 
     /**
      * @return id
@@ -62,28 +62,28 @@ public class LoanDto {
     /**
      * @return startDate
      */
-    public Calendar getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
     /**
      * @param startDate new value of {@link #getStartDate}.
      */
-    public void setStartDate(Calendar startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
     /**
      * @return endDate
      */
-    public Calendar getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
     /**
      * @param endDate new value of {@link #getEndDate}.
      */
-    public void setEndDate(Calendar endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 }

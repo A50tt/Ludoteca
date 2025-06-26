@@ -18,11 +18,11 @@
     }
 }
 
-div .date-fields {
+.date-fields {
+    display: flex;
+    gap: 5px;
+
     mat-form-field {
-        &:first-child {
-            display: inline-flex;
-            margin-right: 10px;
-        }
+        flex: 1;
     }
 }

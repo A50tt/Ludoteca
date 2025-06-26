@@ -15,11 +15,13 @@ import { CommonModule, NgFor } from '@angular/common';
 import { ClientService } from '../../client/client.service';
 import { Observable } from 'rxjs';
 import { GameService } from '../../game/game.service';
-import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MY_DP_FORMAT } from './date-picker/date-picker';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
+
+import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 
 
 @Component({
@@ -35,9 +37,7 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
     NgFor,
     CommonModule,
     MatDatepickerModule,
-    MatNativeDateModule,
-    MatFormFieldModule,
-    MatInputModule,
+    MatNativeDateModule
   ],
   templateUrl: './loan-edit.component.html',
   styleUrl: './loan-edit.component.scss',
@@ -46,6 +46,7 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
     MatDatepickerModule,
     { provide: MAT_DATE_FORMATS, useValue: MY_DP_FORMAT },
     { provide: MY_DP_FORMAT, useValue: 'es-ES' }, // Spanish locale
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS] },
   ]
 })
 

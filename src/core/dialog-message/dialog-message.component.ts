@@ -10,7 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
     styleUrl: './dialog-message.component.scss',
 })
 export class DialogMessageComponent {
-    title!: string;
+    title: string = "Error en la operación";
     description!: string;
 
     constructor(
@@ -19,7 +19,9 @@ export class DialogMessageComponent {
     ) {}
 
     ngOnInit(): void {
-        this.title = this.data.title;
+        if (this.data.title) {
+            this.title = this.data.title; // Solo sobrescribe si `data.title` está definido
+        }
         this.description = this.data.description;
     }
 

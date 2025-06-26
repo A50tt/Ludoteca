@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
+import { AlertService } from '../../core/alerts';
 
 
 @Component({
@@ -18,7 +19,7 @@ import { DialogMessageComponent } from '../../core/dialog-message/dialog-message
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule 
+    MatButtonModule
   ],
   templateUrl: './client-edit.component.html',
   styleUrl: './client-edit.component.scss'
@@ -27,30 +28,34 @@ export class ClientEditComponent {
   client!: Client;
 
   constructor(
-          public dialogRef: MatDialogRef<ClientEditComponent>,
-          @Inject(MAT_DIALOG_DATA) public data: {client : Client},
-          private clientService: ClientService,
-          public errDialog: MatDialog,
-      ) {}
+    public dialogRef: MatDialogRef<ClientEditComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { client: Client },
+    private clientService: ClientService,
+    public errDialog: MatDialog,
+    private alertService: AlertService
+  ) { }
 
-      ngOnInit(): void {
-        this.client = this.data.client != null ? this.data.client : new Client();
-        this.client = this.data.client ? Object.assign({}, this.data.client) : new Client();
-      }
+  ngOnInit(): void {
+    this.client = this.data.client != null ? this.data.client : new Client();
+    this.client = this.data.client ? Object.assign({}, this.data.client) : new Client();
+  }
 
   onSave() {
-    this.clientService.saveClient(this.client).subscribe((result) => {
-      if(result) {
+    this.clientService.saveClient(this.client).subscribe({
+      next: (result) => {
+        this.alertService.success('Cliente registrado correctamente.');
         this.dialogRef.close();
-      } else {
-        const dialogRef = this.errDialog.open(DialogMessageComponent, {
-              data: { title: "No se ha podido guardar el cliente", description: "El nombre del cliente ya existe en la base de datos." }
-            });
+      },
+      error: (err) => {
+        console.log(err);
+        this.errDialog.open(DialogMessageComponent, {
+          data: { description: err.error.extendedMessage }
+        });
       }
     });
   }
 
   onClose() {
-      this.dialogRef.close();
+    this.dialogRef.close();
   }
 }

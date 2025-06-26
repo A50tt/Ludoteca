@@ -1,6 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { LoanService } from '../loan.service';
 import { Loan } from '../model/Loan';
 import { FormsModule } from '@angular/forms';
@@ -20,8 +19,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MY_DP_FORMAT } from './date-picker/date-picker';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { AlertService } from '../../core/alerts';
 
 import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
+import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
 
 
 @Component({
@@ -60,7 +61,9 @@ export class LoanEditComponent implements OnInit {
     private loanService: LoanService,
     private clientService: ClientService,
     private gameService: GameService,
-    private dateAdapter: DateAdapter<Date>
+    private dateAdapter: DateAdapter<Date>,
+    private alertService: AlertService,
+    private errDialog: MatDialog,
   ) {
     this.dateAdapter.setLocale('es-ES'); // Explicitly set the locale
     console.log('Locale set to es-ES');
@@ -77,10 +80,14 @@ export class LoanEditComponent implements OnInit {
   onSave() {
     this.loanService.saveLoan(this.loan).subscribe({
       next: (result) => {
+        this.alertService.success('Préstamo registrado correctamente.');
         this.dialogRef.close();
       },
       error: (err) => {
-        console.log("ERROR! MEEH", err)
+        console.log(err);
+        this.errDialog.open(DialogMessageComponent, {
+          data: { description: err.error.extendedMessage }
+        });
       }
     });
   }

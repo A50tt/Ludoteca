@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { GameService } from '../game.service';
 import { Game } from '../model/Game';
 import { AuthorService } from '../../author/author.service';
@@ -11,11 +11,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { AlertService } from '../../core/alerts';
+import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
 
 @Component({
     selector: 'app-game-edit',
     standalone: true,
-    imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule ],
+    imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule],
     templateUrl: './game-edit.component.html',
     styleUrl: './game-edit.component.scss',
 })
@@ -29,8 +31,10 @@ export class GameEditComponent implements OnInit {
         @Inject(MAT_DIALOG_DATA) public data: any,
         private gameService: GameService,
         private categoryService: CategoryService,
-        private authorService: AuthorService
-    ) {}
+        private authorService: AuthorService,
+        private alertService: AlertService,
+        private errDialog: MatDialog,
+    ) { }
 
     ngOnInit(): void {
         this.game = this.data.game ? Object.assign({}, this.data.game) : new Game();
@@ -63,8 +67,17 @@ export class GameEditComponent implements OnInit {
     }
 
     onSave() {
-        this.gameService.saveGame(this.game).subscribe((result) => {
-            this.dialogRef.close();
+        this.gameService.saveGame(this.game).subscribe({
+            next: (result) => {
+                this.alertService.success('Juego registrado correctamente.');
+                this.dialogRef.close();
+            },
+            error: (err) => {
+                console.log(err);
+                this.errDialog.open(DialogMessageComponent, {
+                    data: { description: err.error.extendedMessage }
+                });
+            }
         });
     }
 

@@ -55,7 +55,6 @@ export class LoanListComponent {
       this.pageNumber = data.pageable.pageNumber;
       this.pageSize = data.pageable.pageSize;
       this.totalElements = data.totalElements;
-      console.log(this.dataSource.data);
     });
   }
 
@@ -90,7 +89,6 @@ export class LoanListComponent {
             console.log("Err", err)
             this.dialog.open(DialogMessageComponent, {
               data: {
-                title: err.error?.message || 'Error inesperado',
                 description: err.error?.extendedMessage || 'No se pudo eliminar el préstamo. Por favor, inténtelo más tarde.',
               },
             });

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Pageable } from '../core/model/page/Pageable';
-import { LOAN_DATA } from './model/mock-loans';
 import { Observable, of, throwError } from 'rxjs';
 import { LoanPage } from './model/LoanPage';
 import { Loan } from './model/Loan';
 import { HttpClient } from '@angular/common/http';
 import { StatusResponse } from '../core/model/StatusResponse';
+import { DateUtils } from '../shared/date-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +21,8 @@ export class LoanService {
   }
 
   saveLoan(loan: Loan): Observable<Loan> {
+    loan.startDate = DateUtils.formatDate(loan.startDate);
+    loan.endDate = DateUtils.formatDate(loan.endDate);
     return this.http.put<Loan>(this.baseUrl, loan);
   }
 

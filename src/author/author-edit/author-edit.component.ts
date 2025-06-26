@@ -34,11 +34,10 @@ export class AuthorEditComponent implements OnInit {
     onSave() {
         this.authorService.saveAuthor(this.author).subscribe({
             next: (result) => {
-                this.alertService.success('Autor registrado correctamente.');
+                this.alertService.success(result.extendedMessage);
                 this.dialogRef.close();
             },
             error: (err) => {
-                console.log(err);
                 this.errDialog.open(DialogMessageComponent, {
                     data: { description: err.error.extendedMessage }
                 });

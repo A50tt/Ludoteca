@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { Category } from './model/Category';
 import { CATEGORY_DATA } from './model/mock-categories';
+import { StatusResponse } from '../core/model/StatusResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -17,10 +18,10 @@ export class CategoryService {
     return this.http.get<Category[]>(this.baseUrl);
   }
 
-  saveCategory(category: Category): Observable<any> { //Observable<Category>
+  saveCategory(category: Category): Observable<StatusResponse> {
     const { id } = category;
     const url = id ? `${this.baseUrl}/${id}` : this.baseUrl;
-    return this.http.put<Category>(url, category);
+    return this.http.put<StatusResponse>(url, category);
   }
 
   deleteCategory(idCategory : number | undefined): Observable<any> {

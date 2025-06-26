@@ -9,6 +9,8 @@ import { CategoryService } from '../category.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CategoryEditComponent } from '../category-edit/category-edit.component';
 import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dialog-confirmation.component';
+import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
+import { AlertService } from '../../core/alerts';
 
 
 @Component({
@@ -29,7 +31,8 @@ export class CategoryListComponent implements OnInit {
 
     constructor(
         private categoryService: CategoryService,
-        public dialog: MatDialog,
+        private dialog: MatDialog,
+        private alertService: AlertService
     ) { }
 
     ngOnInit(): void {
@@ -61,17 +64,29 @@ export class CategoryListComponent implements OnInit {
         });
     }
 
-    deleteCategory(category: Category) {    
-    const dialogRef = this.dialog.open(DialogConfirmationComponent, {
-      data: { title: "Eliminar categoría", description: "Atención si borra la categoría se perderán sus datos.<br> ¿Desea eliminar la categoría?" }
-    });
+    deleteCategory(category: Category) {
+        const dialogRef = this.dialog.open(DialogConfirmationComponent, {
+            data: { title: "Eliminar categoría", description: "Atención si borra la categoría se perderán sus datos.<br> ¿Desea eliminar la categoría?" }
+        });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.categoryService.deleteCategory(category.id).subscribe(result => {
-          this.ngOnInit();
-        }); 
-      }
-    });
-  }  
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.categoryService.deleteCategory(category.id).subscribe({
+                    next: (result) => {
+                        console.log(result.message);
+                        console.log(result.extendedMessage);
+                        this.alertService.success('Categoría registrada.');
+                        this.ngOnInit();
+                    },
+                    error: (err) => {
+                        console.log(err);
+                        this.dialog.open(DialogMessageComponent, {
+                            data: { description: err.error.extendedMessage }
+                        });
+                        this.ngOnInit();
+                    }
+                });
+            }
+        });
+    }
 }

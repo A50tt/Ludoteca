@@ -36,7 +36,7 @@ export class CategoryEditComponent implements OnInit {
     onSave() {
         this.categoryService.saveCategory(this.category).subscribe({
               next: (result) => {
-                this.alertService.success('Categoría registrada correctamente.');
+                this.alertService.success(result.extendedMessage);
                 this.dialogRef.close();
               },
               error: (err) => {

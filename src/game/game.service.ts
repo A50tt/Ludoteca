@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { Game } from './model/Game';
 import { GAME_DATA } from './model/mock-games';
 import { HttpClient } from '@angular/common/http';
+import { StatusResponse } from '../core/model/StatusResponse';
 
 @Injectable({
     providedIn: 'root'
@@ -17,11 +18,11 @@ export class GameService {
         return this.http.get<Game[]>(this.composeFindUrl(title, categoryId));
     }
 
-    saveGame(game: Game): Observable<void> {
+    saveGame(game: Game): Observable<StatusResponse> {
         const { id } = game;
         const url = id ? `${this.baseUrl}/${id}` : this.baseUrl;
 
-        return this.http.put<void>(url, game);
+        return this.http.put<StatusResponse>(url, game);
     }
 
     private composeFindUrl(title?: string, categoryId?: number): string {

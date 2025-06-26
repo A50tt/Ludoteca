@@ -10,6 +10,8 @@ import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dial
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
+import { AlertService } from '../../core/alerts';
 
 @Component({
     selector: 'app-author-list',
@@ -26,7 +28,11 @@ export class AuthorListComponent implements OnInit {
     dataSource = new MatTableDataSource<Author>();
     displayedColumns: string[] = ['id', 'name', 'nationality', 'action'];
 
-    constructor(private authorService: AuthorService, public dialog: MatDialog) {}
+    constructor(
+        private authorService: AuthorService,
+        private dialog: MatDialog,
+        private alertService: AlertService
+    ) { }
 
     ngOnInit(): void {
         this.loadPage();
@@ -82,14 +88,24 @@ export class AuthorListComponent implements OnInit {
             data: {
                 title: 'Eliminar autor',
                 description:
-                    'Atención si borra el autor se perderán sus datos.<br> ¿Desea eliminar el autor?',
+                    'Atención, si borra el autor se perderán sus datos.<br> ¿Desea eliminar el autor?',
             },
         });
 
         dialogRef.afterClosed().subscribe((result) => {
             if (result) {
-                this.authorService.deleteAuthor(author.id).subscribe((result) => {
-                    this.ngOnInit();
+                this.authorService.deleteAuthor(author.id).subscribe({
+                    next: (result) => {
+                        this.alertService.success(result.extendedMessage);
+                        this.ngOnInit();
+                    },
+                    error: (err) => {
+                        console.log(err);
+                        this.dialog.open(DialogMessageComponent, {
+                            data: { description: err.error.extendedMessage }
+                        });
+                        this.ngOnInit();
+                    }
                 });
             }
         });

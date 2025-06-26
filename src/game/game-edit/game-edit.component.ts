@@ -69,7 +69,7 @@ export class GameEditComponent implements OnInit {
     onSave() {
         this.gameService.saveGame(this.game).subscribe({
             next: (result) => {
-                this.alertService.success('Juego registrado correctamente.');
+                this.alertService.success(result.extendedMessage);
                 this.dialogRef.close();
             },
             error: (err) => {

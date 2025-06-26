@@ -43,7 +43,7 @@ export class ClientEditComponent {
   onSave() {
     this.clientService.saveClient(this.client).subscribe({
       next: (result) => {
-        this.alertService.success('Cliente registrado correctamente.');
+        this.alertService.success(result.extendedMessage);
         this.dialogRef.close();
       },
       error: (err) => {

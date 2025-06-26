@@ -8,6 +8,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { ClientService } from '../client.service';
 import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dialog-confirmation.component';
 import { ClientEditComponent } from '../client-edit/client-edit.component';
+import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
+import { AlertService } from '../../core/alerts';
 
 @Component({
   selector: 'app-client-list',
@@ -27,7 +29,8 @@ export class ClientListComponent {
 
   constructor(
     private clientService: ClientService,
-    public dialog: MatDialog
+    private dialog: MatDialog,
+    private alertService: AlertService
   ) { }
 
   ngOnInit(): void {
@@ -36,6 +39,16 @@ export class ClientListComponent {
         this.dataSource.data = clients;
       }
     );
+  }
+
+  createClient() {
+    const dialogRef = this.dialog.open(ClientEditComponent, {
+      data: {},
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      this.ngOnInit();
+    });
   }
 
   editClient(client: Client) {
@@ -51,25 +64,28 @@ export class ClientListComponent {
 
   deleteClient(client: Client) {
     const dialogRef = this.dialog.open(DialogConfirmationComponent, {
-      data: { title: "Eliminar cliente", description: "Atención, si borra el cliente se perderá sus datos.<br> ¿Desea eliminar el cliente?" }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.clientService.deleteClient(client.id).subscribe(result => {
-          this.ngOnInit();
-        }); 
+      data: {
+        title: "Eliminar cliente",
+        description: "Atención, si borra el cliente se perderá sus datos.<br> ¿Desea eliminar el cliente?"
       }
     });
-  }
 
-  createClient() {
-    const dialogRef = this.dialog.open(ClientEditComponent, {
-      data: {}
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      this.ngOnInit();
-    });
+    dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+                this.clientService.deleteClient(client.id).subscribe({
+                    next: (result) => {
+                        this.alertService.success(result.extendedMessage);
+                        this.ngOnInit();
+                    },
+                    error: (err) => {
+                        console.log(err);
+                        this.dialog.open(DialogMessageComponent, {
+                            data: { description: err.error.extendedMessage }
+                        });
+                        this.ngOnInit();
+                    }
+                });
+            }
+        });
   }
 }

@@ -33,6 +33,7 @@ public interface CategoryService {
      *
      * @param id PK de la entidad
      * @param dto datos de la entidad
+     * @return ResponseEntity - Respuesta {@link StatusResponse} del servidor.
      */
     ResponseEntity<StatusResponse> save(Long id, CategoryDto dto);
 
@@ -40,6 +41,7 @@ public interface CategoryService {
      * Método para borrar una {@link Category}
      *
      * @param id PK de la entidad
+     * @return ResponseEntity - Respuesta {@link StatusResponse} del servidor.
      */
     ResponseEntity<StatusResponse> delete(Long id) throws Exception;
 

@@ -1,5 +1,6 @@
 package com.ccsw.tutorial.game;
 
+import com.ccsw.tutorial.common.exception.CommonException;
 import com.ccsw.tutorial.dto.StatusResponse;
 import com.ccsw.tutorial.game.model.Game;
 import com.ccsw.tutorial.game.model.GameDto;
@@ -7,6 +8,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,7 +58,12 @@ public class GameController {
     @Operation(summary = "Save or Update", description = "Method that saves or updates a Game")
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
     public ResponseEntity<StatusResponse> save(@PathVariable(name = "id", required = false) Long id, @RequestBody GameDto dto) {
-        return gameService.save(id, dto);
+        try {
+            return gameService.save(id, dto);
+        } catch (NullPointerException | DataIntegrityViolationException ex1) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
+        } catch (Exception ex2) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
+        }
     }
-
 }

@@ -27,6 +27,7 @@ public interface GameService {
      *
      * @param id PK de la entidad
      * @param dto datos de la entidad
+     * @return ResponseEntity - Respuesta {@link StatusResponse} del servidor.
      */
     ResponseEntity<StatusResponse> save(Long id, GameDto dto);
 

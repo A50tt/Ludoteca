@@ -1,0 +1,16 @@
+com.ccsw.tutorial
+com.ccsw.tutorial.author
+com.ccsw.tutorial.author.model
+com.ccsw.tutorial.category
+com.ccsw.tutorial.category.model
+com.ccsw.tutorial.client
+com.ccsw.tutorial.client.model
+com.ccsw.tutorial.common.criteria
+com.ccsw.tutorial.common.exception
+com.ccsw.tutorial.common.pagination
+com.ccsw.tutorial.config
+com.ccsw.tutorial.dto
+com.ccsw.tutorial.game
+com.ccsw.tutorial.game.model
+com.ccsw.tutorial.loan
+com.ccsw.tutorial.loan.model

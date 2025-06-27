@@ -20,15 +20,7 @@ public class StatusResponse {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
     public String getExtendedMessage() {
         return extendedMessage;
-    }
-
-    public void setExtendedMessage(String extendedMessage) {
-        this.extendedMessage = extendedMessage;
     }
 }

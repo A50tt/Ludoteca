@@ -1,5 +1,6 @@
 package com.ccsw.tutorial.loan;
 
+import com.ccsw.tutorial.common.exception.CommonException;
 import com.ccsw.tutorial.dto.StatusResponse;
 import com.ccsw.tutorial.loan.model.Loan;
 import com.ccsw.tutorial.loan.model.LoanDto;
@@ -10,7 +11,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -72,21 +75,35 @@ public class LoanController {
      * Método para crear un {@link Loan}
      *
      * @param dto datos de la entidad
+     * @return ResponseEntity respuesta del servidor.
      */
     @Operation(summary = "Save", description = "Method that saves a Loan")
     @RequestMapping(path = { "" }, method = RequestMethod.PUT)
     public ResponseEntity<StatusResponse> save(@RequestBody LoanDto dto) {
-        return loanService.save(dto);
+        try {
+            return loanService.save(dto);
+        } catch (HttpMessageNotReadableException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
+        } catch (Exception ex2) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
+        }
     }
 
     /**
      * Método para borrar un {@link Loan}
      *
      * @param id PK de la entidad
+     * @return ResponseEntity respuesta del servidor.
      */
     @Operation(summary = "Delete", description = "Method that deletes a Loan")
     @RequestMapping(path = { "/{id}" }, method = RequestMethod.DELETE)
     public ResponseEntity<StatusResponse> delete(@PathVariable Long id) {
-        return loanService.delete(id);
+        try {
+            return loanService.delete(id);
+        } catch (NullPointerException ex1) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
+        } catch (Exception ex2) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
+        }
     }
 }

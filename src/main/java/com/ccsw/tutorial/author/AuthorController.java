@@ -3,6 +3,7 @@ package com.ccsw.tutorial.author;
 import com.ccsw.tutorial.author.model.Author;
 import com.ccsw.tutorial.author.model.AuthorDto;
 import com.ccsw.tutorial.author.model.AuthorSearchDto;
+import com.ccsw.tutorial.common.exception.CommonException;
 import com.ccsw.tutorial.dto.StatusResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,9 +11,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,6 +64,7 @@ public class AuthorController {
      *
      * @param id PK de la entidad
      * @param dto datos de la entidad
+     * @return ResponseEntity respuesta del servidor.
      */
     @Operation(summary = "Save or Update", description = "Method that saves or updates a Author")
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
@@ -72,11 +76,17 @@ public class AuthorController {
      * Método para crear o actualizar un {@link Author}
      *
      * @param id PK de la entidad
+     * @return ResponseEntity respuesta del servidor.
      */
     @Operation(summary = "Delete", description = "Method that deletes a Author")
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<StatusResponse> delete(@PathVariable("id") Long id) throws Exception {
-        return this.authorService.delete(id);
+        try {
+            return this.authorService.delete(id);
+        } catch (NullPointerException | SQLIntegrityConstraintViolationException ex1) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
+        } catch (Exception ex2) {
+            return null;
+        }
     }
-
 }

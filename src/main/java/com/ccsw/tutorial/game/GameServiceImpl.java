@@ -9,8 +9,6 @@ import com.ccsw.tutorial.game.model.Game;
 import com.ccsw.tutorial.game.model.GameDto;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,8 +19,8 @@ import java.util.List;
 @Transactional
 public class GameServiceImpl implements GameService {
 
-    private final String CREATION_SUCCESSFUL_EXT_MSG = "El juego se ha creado";
-    private final String EDIT_SUCCESSFUL_EXT_MSG = "El juego se ha modificado";
+    private final String CREATION_SUCCESSFUL_EXT_MSG = "El juego se ha creado.";
+    private final String EDIT_SUCCESSFUL_EXT_MSG = "El juego se ha modificado.";
 
     private final GameRepository gameRepository;
 
@@ -43,14 +41,16 @@ public class GameServiceImpl implements GameService {
     public List<Game> find(String title, Long idCategory) {
         GameSpecification titleSpec = new GameSpecification(new SearchCriteria("title", ":", title));
         GameSpecification categorySpec = new GameSpecification(new SearchCriteria("category.id", ":", idCategory));
-
-        Specification<Game> spec = Specification.where(titleSpec).and(categorySpec);
-
-        return this.gameRepository.findAll(spec);
+        return this.gameRepository.findAll(titleSpec.and(categorySpec));
     }
 
     @Override
     public ResponseEntity<StatusResponse> save(Long id, GameDto dto) {
+        // Se ha introducido un Game sin título o edad
+        if (dto.getTitle() == null || dto.getAge() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
+        }
+
         // Tenemos en cuenta si es edición o creación de Autor para devolver el mensaje correspondiente.
         Game game;
         boolean isUpdate = false;

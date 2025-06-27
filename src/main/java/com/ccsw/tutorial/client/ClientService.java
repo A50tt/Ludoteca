@@ -29,6 +29,7 @@ public interface ClientService {
      *
      * @param id PK de la entidad
      * @param dto datos de la entidad
+     * @return ResponseEntity - Respuesta {@link StatusResponse} del servidor.
      */
     ResponseEntity<StatusResponse> save(Long id, ClientDto dto);
 
@@ -36,6 +37,7 @@ public interface ClientService {
      * Método para borrar un {@link Client}
      *
      * @param id PK de la entidad
+     * @return ResponseEntity - Respuesta {@link StatusResponse} del servidor.
      */
     ResponseEntity<StatusResponse> delete(Long id) throws Exception;
 }

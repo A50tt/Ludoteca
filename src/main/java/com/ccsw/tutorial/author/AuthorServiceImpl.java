@@ -5,7 +5,6 @@ import com.ccsw.tutorial.author.model.AuthorDto;
 import com.ccsw.tutorial.author.model.AuthorSearchDto;
 import com.ccsw.tutorial.common.exception.CommonException;
 import com.ccsw.tutorial.dto.StatusResponse;
-import jakarta.transaction.Status;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -23,9 +22,9 @@ import java.util.List;
 @Transactional
 public class AuthorServiceImpl implements AuthorService {
 
-    private final String CREATION_SUCCESSFUL_EXT_MSG = "El autor se ha creado";
-    private final String EDIT_SUCCESSFUL_EXT_MSG = "El autor se ha modificado";
-    private final String DELETE_SUCCESSFUL_EXT_MSG = "El autor se ha eliminado";
+    private final String CREATION_SUCCESSFUL_EXT_MSG = "El autor se ha creado.";
+    private final String EDIT_SUCCESSFUL_EXT_MSG = "El autor se ha modificado.";
+    private final String DELETE_SUCCESSFUL_EXT_MSG = "El autor se ha eliminado.";
 
     private final AuthorRepository authorRepository;
     private final AuthorGameHelperService helper;
@@ -100,23 +99,17 @@ public class AuthorServiceImpl implements AuthorService {
 
         // Check if author exists
         if (authorRepository.findById(id).isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new StatusResponse(AuthorException.AUTHOR_ID_NOT_FOUND, AuthorException.AUTHOR_ID_NOT_FOUND_EXTENDED));
-
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new StatusResponse(AuthorException.AUTHOR_ID_NOT_FOUND, AuthorException.AUTHOR_ID_NOT_FOUND_EXTENDED));
         }
         if (helper.findGamesByAuthor(id)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new StatusResponse(AuthorException.AUTHOR_HAS_GAMES, AuthorException.AUTHOR_HAS_GAMES_EXTENDED));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(AuthorException.AUTHOR_HAS_GAMES, AuthorException.AUTHOR_HAS_GAMES_EXTENDED));
 
         }
         try {
             authorRepository.deleteById(id);
-            return ResponseEntity.ok()
-                    .body(new StatusResponse(StatusResponse.OK_REQUEST_MSG, DELETE_SUCCESSFUL_EXT_MSG));
+            return ResponseEntity.ok().body(new StatusResponse(StatusResponse.OK_REQUEST_MSG, DELETE_SUCCESSFUL_EXT_MSG));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
         }
     }
-
 }

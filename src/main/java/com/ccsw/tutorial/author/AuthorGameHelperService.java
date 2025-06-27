@@ -4,11 +4,8 @@ import com.ccsw.tutorial.common.criteria.SearchCriteria;
 import com.ccsw.tutorial.game.GameRepository;
 import com.ccsw.tutorial.game.GameSpecification;
 import com.ccsw.tutorial.game.model.Game;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class AuthorGameHelperService {
@@ -29,7 +26,7 @@ public class AuthorGameHelperService {
     public boolean findGamesByAuthor(Long idAuthor) {
         GameSpecification authorSpec = new GameSpecification(new SearchCriteria("author.id", ":", idAuthor));
 
-        Specification<Game> spec = Specification.where(authorSpec);
+        Specification<Game> spec = authorSpec.and(authorSpec);
         return !gameRepository.findAll(spec).isEmpty();
     }
 }

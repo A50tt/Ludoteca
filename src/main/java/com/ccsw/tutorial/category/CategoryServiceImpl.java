@@ -21,12 +21,11 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
 
     private final String CREATION_SUCCESSFUL_EXT_MSG = "La categoría se ha creado.";
-    private final String EDIT_SUCCESSFUL_EXT_MSG = "La categoría se ha modificado";
-    private final String DELETE_SUCCESSFUL_EXT_MSG = "La categoría se ha eliminado";
+    private final String EDIT_SUCCESSFUL_EXT_MSG = "La categoría se ha modificado.";
+    private final String DELETE_SUCCESSFUL_EXT_MSG = "La categoría se ha eliminado.";
 
     private final CategoryRepository categoryRepository;
     private final CategoryGameHelperService helper;
-
 
     public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryGameHelperService helper) {
         this.categoryRepository = categoryRepository;
@@ -89,21 +88,17 @@ public class CategoryServiceImpl implements CategoryService {
     public ResponseEntity<StatusResponse> delete(Long id) throws Exception {
 
         if (this.get(id) == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new StatusResponse(CategoryException.CATEGORY_ID_NOT_FOUND, CategoryException.CATEGORY_ID_NOT_FOUND_EXTENDED));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new StatusResponse(CategoryException.CATEGORY_ID_NOT_FOUND, CategoryException.CATEGORY_ID_NOT_FOUND_EXTENDED));
         }
         if (helper.findGamesByCategory(id)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new StatusResponse(CategoryException.CATEGORY_HAS_GAMES, CategoryException.CATEGORY_HAS_GAMES_EXTENDED));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CategoryException.CATEGORY_HAS_GAMES, CategoryException.CATEGORY_HAS_GAMES_EXTENDED));
 
         }
         try {
             categoryRepository.deleteById(id);
-            return ResponseEntity.ok()
-                    .body(new StatusResponse(StatusResponse.OK_REQUEST_MSG, DELETE_SUCCESSFUL_EXT_MSG));
+            return ResponseEntity.ok().body(new StatusResponse(StatusResponse.OK_REQUEST_MSG, DELETE_SUCCESSFUL_EXT_MSG));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
         }
     }
 

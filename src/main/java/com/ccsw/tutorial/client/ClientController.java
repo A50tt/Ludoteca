@@ -2,11 +2,12 @@ package com.ccsw.tutorial.client;
 
 import com.ccsw.tutorial.client.model.Client;
 import com.ccsw.tutorial.client.model.ClientDto;
+import com.ccsw.tutorial.common.exception.CommonException;
 import com.ccsw.tutorial.dto.StatusResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +47,7 @@ public class ClientController {
      *
      * @param id PK de la entidad
      * @param dto datos de la entidad
+     * @return ResponseEntity respuesta del servidor.
      */
     @Operation(summary = "Save", description = "Method that saves or updates a Client")
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
@@ -57,10 +59,17 @@ public class ClientController {
      * Método para borrar un {@link Client}
      *
      * @param id PK de la entidad
+     * @return ResponseEntity respuesta del servidor.
      */
     @Operation(summary = "Delete", description = "Method that deletes a Category")
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<StatusResponse> delete(@PathVariable("id") Long id) throws Exception {
-        return this.clientService.delete(id);
+        try {
+            return this.clientService.delete(id);
+        } catch (NullPointerException ex1) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
+        } catch (Exception ex2) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
+        }
     }
 }

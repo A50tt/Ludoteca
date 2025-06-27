@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { AuthorEditComponent } from '../author-edit/author-edit.component';
@@ -12,13 +12,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
 import { AlertService } from '../../core/alerts';
+import { DialogMessageService } from '../../core/dialog-message/dialog-message-service';
 
 @Component({
     selector: 'app-author-list',
     standalone: true,
-    imports: [MatButtonModule, MatIconModule, MatTableModule, CommonModule, MatPaginatorModule],
+    imports: [MatButtonModule, MatIconModule, MatTableModule, CommonModule, MatPaginatorModule, MatDialogModule],
     templateUrl: './author-list.component.html',
     styleUrl: './author-list.component.scss',
+    providers: []
 })
 export class AuthorListComponent implements OnInit {
     pageNumber: number = 0;
@@ -31,7 +33,8 @@ export class AuthorListComponent implements OnInit {
     constructor(
         private authorService: AuthorService,
         private dialog: MatDialog,
-        private alertService: AlertService
+        private alertService: AlertService,
+        private errDialogService: DialogMessageService
     ) { }
 
     ngOnInit(): void {
@@ -100,10 +103,7 @@ export class AuthorListComponent implements OnInit {
                         this.ngOnInit();
                     },
                     error: (err) => {
-                        console.log(err);
-                        this.dialog.open(DialogMessageComponent, {
-                            data: { description: err.error.extendedMessage }
-                        });
+                        this.errDialogService.openMsgErrorDialog(err.error.message, err.error.extendedMessage);
                         this.ngOnInit();
                     }
                 });

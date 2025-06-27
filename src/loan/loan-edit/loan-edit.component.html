@@ -1,7 +1,7 @@
 <div class="container">
     <h1>Crear préstamo</h1>
 
-    <form>
+    <form (keyup.enter)="onSave()">
         <mat-form-field>
             <mat-label>Identificador</mat-label>
             <input type="text" matInput placeholder="Identificador" [(ngModel)]="loan.id" name="id" disabled>

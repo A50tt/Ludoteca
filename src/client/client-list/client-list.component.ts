@@ -10,6 +10,7 @@ import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dial
 import { ClientEditComponent } from '../client-edit/client-edit.component';
 import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
 import { AlertService } from '../../core/alerts';
+import { DialogMessageService } from '../../core/dialog-message/dialog-message-service';
 
 @Component({
   selector: 'app-client-list',
@@ -30,7 +31,8 @@ export class ClientListComponent {
   constructor(
     private clientService: ClientService,
     private dialog: MatDialog,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private errDialogService: DialogMessageService
   ) { }
 
   ngOnInit(): void {
@@ -78,10 +80,7 @@ export class ClientListComponent {
                         this.ngOnInit();
                     },
                     error: (err) => {
-                        console.log(err);
-                        this.dialog.open(DialogMessageComponent, {
-                            data: { description: err.error.extendedMessage }
-                        });
+                      this.errDialogService.openMsgErrorDialog(err.error.message, err.error.extendedMessage);
                         this.ngOnInit();
                     }
                 });

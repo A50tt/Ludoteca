@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
 import { AlertService } from '../../core/alerts';
+import { DialogMessageService } from '../../core/dialog-message/dialog-message-service';
 
 
 @Component({
@@ -32,7 +33,8 @@ export class ClientEditComponent {
     @Inject(MAT_DIALOG_DATA) public data: { client: Client },
     private clientService: ClientService,
     public errDialog: MatDialog,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private errDialogService: DialogMessageService
   ) { }
 
   ngOnInit(): void {
@@ -47,10 +49,7 @@ export class ClientEditComponent {
         this.dialogRef.close();
       },
       error: (err) => {
-        console.log(err);
-        this.errDialog.open(DialogMessageComponent, {
-          data: { description: err.error.extendedMessage }
-        });
+        this.errDialogService.openMsgErrorDialog(err.error.message, err.error.extendedMessage);
       }
     });
   }

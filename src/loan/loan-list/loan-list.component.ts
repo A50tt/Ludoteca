@@ -11,6 +11,8 @@ import { Pageable } from '../../core/model/page/Pageable';
 import { LoanEditComponent } from '../loan-edit/loan-edit.component';
 import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dialog-confirmation.component';
 import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
+import { DialogMessageService } from '../../core/dialog-message/dialog-message-service';
+import { AlertService } from '../../core/alerts';
 
 @Component({
   selector: 'app-loan-list',
@@ -27,7 +29,12 @@ export class LoanListComponent {
   dataSource = new MatTableDataSource<Loan>();
   displayedColumns: string[] = ['id', 'game', 'client', 'startDate', 'endDate', 'action'];
 
-  constructor(private loanService: LoanService, public dialog: MatDialog) { }
+  constructor(
+    private loanService: LoanService,
+    private dialog: MatDialog,
+    private errDialogService: DialogMessageService,
+    private alertService: AlertService
+  ) { }
 
   ngOnInit(): void {
     this.loadPage();
@@ -79,19 +86,13 @@ export class LoanListComponent {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        console.log("Result", result);
         this.loanService.deleteLoan(loan.id).subscribe({
           next: (response) => {
-            console.log("Response", response);
-            this.ngOnInit(); // Reload the list
+            this.alertService.success(response.extendedMessage);
+            this.ngOnInit();
           },
           error: (err) => {
-            console.log("Err", err)
-            this.dialog.open(DialogMessageComponent, {
-              data: {
-                description: err.error?.extendedMessage || 'No se pudo eliminar el préstamo. Por favor, inténtelo más tarde.',
-              },
-            });
+            this.errDialogService.openMsgErrorDialog(err.error.message, err.error.extendedMessage);
           },
         });
       }

@@ -12,7 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { AlertService } from '../../core/alerts';
-import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
+import { DialogMessageService } from '../../core/dialog-message/dialog-message-service';
 
 @Component({
     selector: 'app-game-edit',
@@ -33,7 +33,7 @@ export class GameEditComponent implements OnInit {
         private categoryService: CategoryService,
         private authorService: AuthorService,
         private alertService: AlertService,
-        private errDialog: MatDialog,
+        private errDialogService: DialogMessageService
     ) { }
 
     ngOnInit(): void {
@@ -73,10 +73,7 @@ export class GameEditComponent implements OnInit {
                 this.dialogRef.close();
             },
             error: (err) => {
-                console.log(err);
-                this.errDialog.open(DialogMessageComponent, {
-                    data: { description: err.error.extendedMessage }
-                });
+                this.errDialogService.openMsgErrorDialog(err.error.message, err.error.extendedMessage);
             }
         });
     }

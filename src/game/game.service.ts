@@ -19,10 +19,16 @@ export class GameService {
     }
 
     saveGame(game: Game): Observable<StatusResponse> {
-        const { id } = game;
-        const url = id ? `${this.baseUrl}/${id}` : this.baseUrl;
-
-        return this.http.put<StatusResponse>(url, game);
+        if (game === undefined) {
+            return of({
+                message: 'Datos incompletos',
+                extendedMessage: 'Por favor, introduzca todos los campos obligatorios.'
+            });
+        } else {
+            const { id } = game;
+            const url = id ? `${this.baseUrl}/${id}` : this.baseUrl;
+            return this.http.put<StatusResponse>(url, game);
+        }
     }
 
     private composeFindUrl(title?: string, categoryId?: number): string {

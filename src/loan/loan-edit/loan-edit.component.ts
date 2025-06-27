@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { LoanService } from '../loan.service';
 import { Loan } from '../model/Loan';
@@ -23,6 +23,7 @@ import { AlertService } from '../../core/alerts';
 
 import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
+import { DialogMessageService } from '../../core/dialog-message/dialog-message-service';
 
 
 @Component({
@@ -63,7 +64,7 @@ export class LoanEditComponent implements OnInit {
     private gameService: GameService,
     private dateAdapter: DateAdapter<Date>,
     private alertService: AlertService,
-    private errDialog: MatDialog,
+    private errDialogService: DialogMessageService,
   ) {
     this.dateAdapter.setLocale('es-ES'); // Explicitly set the locale
     console.log('Locale set to es-ES');
@@ -78,16 +79,25 @@ export class LoanEditComponent implements OnInit {
   }
 
   onSave() {
+    // Si startDate o endDate no están definidos, fuerza el validation check
+    if (!this.loan.startDate || !this.loan.endDate) {
+      const startDateInput = document.querySelector('[name="startDate"]') as HTMLElement;
+      const endDateInput = document.querySelector('[name="endDate"]') as HTMLElement;
+
+      startDateInput?.focus();
+      startDateInput?.blur();
+
+      endDateInput?.focus();
+      endDateInput?.blur();
+    }
+    
     this.loanService.saveLoan(this.loan).subscribe({
       next: (result) => {
-        this.alertService.success('Préstamo registrado correctamente.');
+        this.alertService.success(result.extendedMessage);
         this.dialogRef.close();
       },
       error: (err) => {
-        console.log(err);
-        this.errDialog.open(DialogMessageComponent, {
-          data: { description: err.error.extendedMessage }
-        });
+        this.errDialogService.openMsgErrorDialog(err.error.message, err.error.extendedMessage);
       }
     });
   }

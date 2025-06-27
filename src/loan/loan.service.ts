@@ -20,10 +20,10 @@ export class LoanService {
     return this.http.post<LoanPage>(this.baseUrl, { pageable: pageable });
   }
 
-  saveLoan(loan: Loan): Observable<Loan> {
+  saveLoan(loan: Loan): Observable<StatusResponse> {
     loan.startDate = DateUtils.formatDate(loan.startDate);
     loan.endDate = DateUtils.formatDate(loan.endDate);
-    return this.http.put<Loan>(this.baseUrl, loan);
+    return this.http.put<StatusResponse>(this.baseUrl, loan);
   }
 
   deleteLoan(id: number): Observable<StatusResponse> {

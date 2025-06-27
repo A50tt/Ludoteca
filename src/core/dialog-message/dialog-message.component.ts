@@ -10,7 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
     styleUrl: './dialog-message.component.scss',
 })
 export class DialogMessageComponent {
-    title: string = "Error en la operación";
+    title!: string;
     description!: string;
 
     constructor(

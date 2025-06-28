@@ -26,11 +26,14 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*")
 public class GameController {
 
-    @Autowired
-    GameService gameService;
+    private final GameService gameService;
 
-    @Autowired
-    ModelMapper mapper;
+    private final ModelMapper mapper;
+
+    public GameController(GameService gameService, ModelMapper mapper) {
+        this.gameService = gameService;
+        this.mapper = mapper;
+    }
 
     /**
      * Método para recuperar una lista de {@link Game}
@@ -42,15 +45,12 @@ public class GameController {
     @Operation(summary = "Find", description = "Method that return a filtered list of Games")
     @RequestMapping(path = "", method = RequestMethod.GET)
     public List<GameDto> find(@RequestParam(value = "title", required = false) String title, @RequestParam(value = "idCategory", required = false) Long idCategory) {
-
         List<Game> games = gameService.find(title, idCategory);
-
         return games.stream().map(e -> mapper.map(e, GameDto.class)).collect(Collectors.toList());
-
     }
 
     /**
-     * Método para crear o actualizar un {@link Game}
+     * Método para crear o actualizar un {@link Game}.
      *
      * @param id PK de la entidad
      * @param dto datos de la entidad
@@ -59,10 +59,10 @@ public class GameController {
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
     public ResponseEntity<StatusResponse> save(@PathVariable(name = "id", required = false) Long id, @RequestBody GameDto dto) {
         try {
-            return gameService.save(id, dto);
-        } catch (NullPointerException | DataIntegrityViolationException ex1) {
+            return gameService.save(id, dto); // No se ha informado de 'edad', 'Category' o 'Author'
+        } catch (NullPointerException | DataIntegrityViolationException ex1) { // No se ha introducido 'title'
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
-        } catch (Exception ex2) {
+        } catch (Exception ex2) { // Exception catch por defecto.
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
         }
     }

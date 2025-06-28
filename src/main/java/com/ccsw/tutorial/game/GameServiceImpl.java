@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -46,30 +47,31 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public ResponseEntity<StatusResponse> save(Long id, GameDto dto) {
-        // Se ha introducido un Game sin título o edad
-        if (dto.getTitle() == null || dto.getAge() == null) {
+        // Se ha introducido un Game sin 'title', 'age', 'Category' o 'Author'
+        if (dto.getTitle().isEmpty() || dto.getAge() == null || dto.getCategory().getId() == null || dto.getAuthor().getId() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
         }
 
-        // Tenemos en cuenta si es edición o creación de Autor para devolver el mensaje correspondiente.
+        // Tenemos en cuenta si es edición o creación de 'Game' para devolver el StatusResponse con body correspondiente.
         Game game;
         boolean isUpdate = false;
 
+        // Recuperamos un 'Game' con ese 'id' en la BBDD si existe y definimos la operación como UPDATE.
+        // Si no existe, lo inicializamos sin valores.
         if (id == null) {
-            game = new Game();
+            game = new Game(); // Inicializamos el objeto (sin valores).
         } else {
             game = this.gameRepository.findById(id).orElse(null);
-            if (game != null) {
+            if (game != null) { // Si se ha encontrado un 'Game' con ese 'id' en la BBDD, es UPDATE.
                 isUpdate = true;
             }
         }
-
         BeanUtils.copyProperties(dto, game, "id", "author", "category");
         game.setAuthor(authorService.get(dto.getAuthor().getId()));
         game.setCategory(categoryService.get(dto.getCategory().getId()));
 
         try {
-            this.gameRepository.save(game);
+            this.gameRepository.save(game); // Si da Exception o no y según UPDATE, devuelve un body u otro.
             if (isUpdate) {
                 return ResponseEntity.status(HttpStatus.OK).body(new StatusResponse(StatusResponse.OK_REQUEST_MSG, EDIT_SUCCESSFUL_EXT_MSG));
             }

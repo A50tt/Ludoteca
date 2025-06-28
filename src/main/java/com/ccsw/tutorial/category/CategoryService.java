@@ -14,7 +14,7 @@ import java.util.List;
 public interface CategoryService {
 
     /**
-     * Recupera una {@link Category} a partir de su ID
+     * Recupera una {@link Category} a partir de su {@code id}.
      *
      * @param id PK de la entidad
      * @return {@link Category}
@@ -22,14 +22,15 @@ public interface CategoryService {
     Category get(Long id);
 
     /**
-     * Método para recuperar todas las {@link Category}
+     * Método para recuperar todas las {@link Category}.
      *
      * @return {@link List} de {@link Category}
      */
     List<Category> findAll();
 
     /**
-     * Método para crear o actualizar una {@link Category}
+     * Método para crear o actualizar una {@link Category}.
+     * Devolverá un @{code StatusResponse} con error si falta cualquiera de los cambos.
      *
      * @param id PK de la entidad
      * @param dto datos de la entidad

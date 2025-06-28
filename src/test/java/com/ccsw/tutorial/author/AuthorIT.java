@@ -122,7 +122,7 @@ public class AuthorIT {
     }
 
     @Test
-    public void modifyWithNotExistIdShouldThrowException() {
+    public void modifyWithNotExistIdShouldReturnBadRequestError() {
 
         long authorId = TOTAL_AUTHORS + 1;
 
@@ -131,7 +131,7 @@ public class AuthorIT {
 
         ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + authorId, HttpMethod.PUT, new HttpEntity<>(dto), Void.class);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
@@ -151,13 +151,13 @@ public class AuthorIT {
     }
 
     @Test
-    public void deleteWithNotExistsIdShouldThrowException() {
+    public void deleteWithNotExistsIdShouldReturnNotFoundError() {
 
         long deleteAuthorId = TOTAL_AUTHORS + 1;
 
         ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + deleteAuthorId, HttpMethod.DELETE, null, Void.class);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     ParameterizedTypeReference<List<AuthorDto>> responseTypeList = new ParameterizedTypeReference<List<AuthorDto>>(){};

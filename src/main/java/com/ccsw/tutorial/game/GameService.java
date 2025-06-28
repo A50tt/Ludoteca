@@ -24,6 +24,7 @@ public interface GameService {
 
     /**
      * Guarda o modifica un juego, dependiendo de si el identificador está o no informado
+     * Devolverá un @{code StatusResponse} con error si falta cualquiera de los cambos.
      *
      * @param id PK de la entidad
      * @param dto datos de la entidad

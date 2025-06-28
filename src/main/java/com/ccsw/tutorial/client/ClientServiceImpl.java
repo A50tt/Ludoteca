@@ -49,7 +49,12 @@ public class ClientServiceImpl implements ClientService {
      */
     @Override
     public ResponseEntity<StatusResponse> save(Long id, ClientDto dto) {
-        // Tenemos en cuenta si es edición o creación de Client para devolver el mensaje correspondiente.
+        // Se ha introducido un 'Client' sin 'name'
+        if (dto.getName().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
+        }
+
+        // Tenemos en cuenta si es edición o creación de 'Client' para devolver el mensaje correspondiente.
         Client client;
         boolean isUpdate = false;
 
@@ -57,20 +62,23 @@ public class ClientServiceImpl implements ClientService {
         if (!clientRepository.findAll(nameSpec.and(nameSpec)).isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(ClientException.NAME_ALREADY_EXISTS, ClientException.NAME_ALREADY_EXISTS_EXTENDED));
         }
+
+        // Recuperamos un 'Client' con ese 'id' en la BBDD si existe y definimos la operación como UPDATE.
+        // Si no existe, lo inicializamos sin valores.
         if (id == null) {
-            client = new Client();
+            client = new Client(); // Inicializamos el objeto (sin valores).
         } else {
             client = this.get(id);
-            if (client != null) {
+            if (client != null) { // Si se ha encontrado un 'Client' con ese 'id' en la BBDD, es UPDATE.
                 isUpdate = true;
             }
         }
 
-        // client.setName(dto.getName());
         BeanUtils.copyProperties(dto, client, "id");
+        client.setName(dto.getName());
 
         try {
-            this.clientRepository.save(client);
+            this.clientRepository.save(client); // Si da Exception o no y según UPDATE, devuelve un body u otro.
             if (isUpdate) {
                 return ResponseEntity.status(HttpStatus.OK).body(new StatusResponse(StatusResponse.OK_REQUEST_MSG, EDIT_SUCCESSFUL_EXT_MSG));
             }
@@ -84,7 +92,7 @@ public class ClientServiceImpl implements ClientService {
      * {@inheritDoc}
      */
     @Override
-    public ResponseEntity<StatusResponse> delete(Long id) throws Exception {
+    public ResponseEntity<StatusResponse> delete(Long id) {
         // Check if client exists
         if (clientRepository.findById(id).isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new StatusResponse(ClientException.CLIENT_ID_NOT_FOUND, ClientException.CLIENT_ID_NOT_FOUND_EXTENDED));

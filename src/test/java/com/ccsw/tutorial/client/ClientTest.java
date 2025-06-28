@@ -2,6 +2,8 @@ package com.ccsw.tutorial.client;
 
 import com.ccsw.tutorial.client.model.Client;
 import com.ccsw.tutorial.client.model.ClientDto;
+import com.ccsw.tutorial.common.exception.CommonException;
+import com.ccsw.tutorial.dto.StatusResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -9,8 +11,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +27,9 @@ public class ClientTest {
     @Mock
     private ClientRepository clientRepository;
 
+    @Mock
+    private ClientLoanHelperService helper;
+
     @InjectMocks
     private ClientServiceImpl clientService;
 
@@ -29,7 +37,9 @@ public class ClientTest {
     public final long EXISTENT_CLIENT_ID = 1L;
     public final long NON_EXISTENT_CLIENT_ID = 90L;
 
-    // findAll() debería devolver todos los resultados de Client en la BD
+    /**
+     * {@code findAll()} debería devolver todos los {@code Client} en la BBDD.
+     */
     @Test
     public void findAllShouldReturnAllClients() {
         List<Client> list = new ArrayList<>();
@@ -43,7 +53,9 @@ public class ClientTest {
         assertEquals(1, clients.size());
     }
 
-    // save() un cliente con nombre único ha de guardarlo correctamente.
+    /**
+     * {@code save()} un {@code Client} con nombre único ha de guardarlo correctamente.
+     */
     @Test
     public void saveWithUniqueNameShouldSave() {
         ClientDto clientDto = new ClientDto();
@@ -58,52 +70,52 @@ public class ClientTest {
         assertEquals(CLIENT_NAME, client.getValue().getName());
     }
 
-    // save() un cliente con un nombre ya existente en la BD ha de devolver 'false' y no guardar.
+    /**
+     * {@code save()} un {@code Client} con un {@code name} ya existente en la BBDD ha de devolver un {@code ClientException.NAME_ALREADY_EXISTS}.
+     */
     @Test
-    public void saveExistsShouldReturnFalseAndNotSave() {
+    public void saveWhenSameNameExistsShouldReturnClientNameError() {
         ClientDto firstClientDto = new ClientDto();
         firstClientDto.setName(CLIENT_NAME);
 
         ClientDto existentClientDto = new ClientDto();
         existentClientDto.setName(CLIENT_NAME);
 
-        // Configura que el primer sabe devuelve false (no existe en bd y guarda) y el segundo true
-        when(clientRepository.exists(any(Specification.class))).thenReturn(false)  // Para el primer save (nombre no existe) devuelve FALSE de exists() y GUARDA.
-                .thenReturn(true);  // Para el primer save (nombre no existe) devuelve TRUE de exists() y NO GUARDA.
+        // Configura para que el primer 'save()' se comporte distinto al segundo.
+        when(clientRepository.findAll(any(Specification.class)))
+                .thenReturn(Collections.emptyList())  // Para el primer 'save()' ('name' no existe) devuelve una empty list.
+                .thenReturn(List.of(new Client()));  // Para el primer 'save()' ('name' ahora existe) devuelve una 'List' de 'Client's.
 
-        // First save should succeed (assuming it returns true)
-        clientService.save(null, firstClientDto);
+        // El primero debería haber tenido éxito
+        ResponseEntity<StatusResponse> result1 = clientService.save(null, firstClientDto);
+        // Captura el resultado del segundo 'save()', que debería fallar
+        ResponseEntity<StatusResponse> result2 = clientService.save(null, existentClientDto);
 
-        // Capture the result of the second save
-        boolean result = clientService.save(null, existentClientDto);
+        assertEquals(HttpStatus.OK, result1.getStatusCode());
+        assertEquals(result1.getBody().getMessage(), StatusResponse.OK_REQUEST_MSG);
 
-        ArgumentCaptor<Client> client = ArgumentCaptor.forClass(Client.class);
-
-        // The repository's save method should only be called once (for the first client)
-        verify(clientRepository, times(1)).save(any(Client.class));
-
-        assertFalse(result);
+        assertEquals(HttpStatus.BAD_REQUEST, result2.getStatusCode());
+        assertEquals(result2.getBody().getMessage(), ClientException.NAME_ALREADY_EXISTS);
     }
 
-    // delete() un cliente que existe
-
+    /**
+     * {@code delete()} un {@code Client} que existe en la BBDD debería eliminarlo con éxito.
+     */
     @Test
     public void deleteExistsShouldDelete() throws Exception {
-
         Client client = mock(Client.class);
-
         when(clientRepository.findById(EXISTENT_CLIENT_ID)).thenReturn(Optional.ofNullable(client));
 
         clientService.delete(EXISTENT_CLIENT_ID);
-
         verify(clientRepository).deleteById(EXISTENT_CLIENT_ID);
     }
 
-    // delete() un cliente que no existe ha de lanzar Exception y no guardar
+    /**
+     * {@code delete()} un {@code Client} que no existe ha de devolver un {@code ClientException.CLIENT_ID_NOT_FOUND}.
+     */
     @Test
-    public void deleteClienteNotExistsShouldThrowExceptionAndNotSave() throws Exception {
-        assertThrows(Exception.class, () -> {
-            clientService.delete(NON_EXISTENT_CLIENT_ID);
-        });
+    public void deleteClienteNotExistsShouldReturnClientNotFound() {
+        ResponseEntity<StatusResponse> response = clientService.delete(NON_EXISTENT_CLIENT_ID);
+        assertEquals(response.getBody().getMessage(), ClientException.CLIENT_ID_NOT_FOUND);
     }
 }

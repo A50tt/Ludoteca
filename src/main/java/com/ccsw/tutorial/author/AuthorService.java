@@ -40,6 +40,7 @@ public interface AuthorService {
 
     /**
      * Método para crear o actualizar un {@link Author}
+     * Devolverá un @{code StatusResponse} con error si falta cualquiera de los cambos.
      *
      * @param id PK de la entidad
      * @param dto datos de la entidad

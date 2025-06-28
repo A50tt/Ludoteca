@@ -21,6 +21,9 @@ public class CategoryTest {
     @Mock
     private CategoryRepository categoryRepository;
 
+    @Mock
+    private CategoryGameHelperService helper;
+
     @InjectMocks
     private CategoryServiceImpl categoryService;
 

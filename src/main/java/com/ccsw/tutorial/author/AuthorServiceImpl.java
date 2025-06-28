@@ -65,14 +65,21 @@ public class AuthorServiceImpl implements AuthorService {
      */
     @Override
     public ResponseEntity<StatusResponse> save(Long id, AuthorDto dto) {
-        // Tenemos en cuenta si es edición o creación de Autor para devolver el mensaje correspondiente.
+        // Se ha introducido un 'Author' sin 'name' o 'nationality'
+        if (dto.getName().isEmpty() || dto.getNationality().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
+        }
+
+        // Tenemos en cuenta si es edición o creación de 'Autor' para devolver el mensaje correspondiente.
         Author author;
         boolean isUpdate = false;
 
+        // Recuperamos un 'Author' con ese 'id' en la BBDD si existe y definimos la operación como UPDATE.
+        // Si no existe, lo inicializamos sin valores.
         if (id == null) {
-            author = new Author();
+            author = new Author(); // Inicializamos el objeto (sin valores).
         } else {
-            author = this.get(id);
+            author = this.get(id); // Si se ha encontrado un 'Author' con ese 'id' en la BBDD, es UPDATE.
             if (author != null) {
                 isUpdate = true;
             }
@@ -81,7 +88,7 @@ public class AuthorServiceImpl implements AuthorService {
         BeanUtils.copyProperties(dto, author, "id");
 
         try {
-            this.authorRepository.save(author);
+            this.authorRepository.save(author); // Si da Exception o no y según UPDATE, devuelve un body u otro.
             if (isUpdate) {
                 return ResponseEntity.status(HttpStatus.OK).body(new StatusResponse(StatusResponse.OK_REQUEST_MSG, EDIT_SUCCESSFUL_EXT_MSG));
             }

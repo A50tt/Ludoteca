@@ -237,15 +237,19 @@ public class GameIT {
         assertEquals(EXISTS_GAME_ID, response.getBody().get(0).getId());
     }
 
-    @Test
-    public void modifyWithNotExistIdShouldThrowException() {
+    /**
+     * Envía una petición {@code PUT} para actualizar un {@code Game} con un {@code id} que no existe
+     * y verifica que la respuesta devuelve un error de {@code HttpStatus.BAD_REQUEST} o 400 "Bad Request".
+     */
 
+    @Test
+    public void modifyWithNotExistIdShouldReturnError() {
         GameDto dto = new GameDto();
         dto.setTitle(NEW_TITLE);
 
         ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + NOT_EXISTS_GAME_ID, HttpMethod.PUT, new HttpEntity<>(dto), Void.class);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
 }

@@ -26,10 +26,11 @@ public class ClientIT {
 
     public static final Long MODIFY_CLIENT_ID = 1L;
 
-    public static final Long DELETE_CLIENT_ID = 3L;
+    public static final Long DELETE_CLIENT_ID = 7L;
+    public static final Long WITH_LOANS_CLIENT_ID = 1L;
 
     public static final String LOCALHOST = "http://localhost:";
-    public static final String SERVICE_PATH = "/clients";
+    public static final String SERVICE_PATH = "/client";
 
     @LocalServerPort
     private int port;
@@ -40,6 +41,9 @@ public class ClientIT {
     ParameterizedTypeReference<List<ClientDto>> responseType = new ParameterizedTypeReference<List<ClientDto>>() {
     };
 
+    /**
+     * {@code findAll()} debería devolver todos los {@code Client} de la base de datos.
+     */
     @Test
     public void findAllShouldReturnAllClients() {
 
@@ -49,6 +53,9 @@ public class ClientIT {
         assertEquals(7, response.getBody().size());
     }
 
+    /**
+     * Guardar un {@code Client} que no exista aún en la BBDD debería crear uno nuevo con éxito.
+     */
     @Test
     public void saveWithoutIdShouldCreateNewClient() {
 
@@ -66,6 +73,9 @@ public class ClientIT {
         assertEquals(NEW_CLIENT_NAME, clientSearch.getName());
     }
 
+    /**
+     * Modificar un {@code Client} que exista debería modificarlo con éxito.
+     */
     @Test
     public void modifyWithExistIdShouldModifyClient() {
 
@@ -83,33 +93,52 @@ public class ClientIT {
         assertEquals(NEW_CLIENT_NAME, clientSearch.getName());
     }
 
+    /**
+     * Modificar un {@code Client} que no exista debería devolver un {@code HttpStatus.BAD_REQUEST}.
+     */
     @Test
-    public void modifyWithNotExistIdShouldInternalError() {
+    public void modifyWithIdNotExistShouldReturnBadRequestError() {
 
         ClientDto dto = new ClientDto();
         dto.setName(NEW_CLIENT_NAME);
 
         ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + NEW_CLIENT_ID, HttpMethod.PUT, new HttpEntity<>(dto), Void.class);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
+    /**
+     * Borrar un {@code Client} que no tenga ningún {@code Loan} a su nombre debería borrarlo con éxito.
+     */
     @Test
-    public void deleteWithExistsIdShouldDeleteClient() {
+    public void deleteWhenIdExistsAndDoNotHaveLoanShouldDelete() {
+        // Borra el 'Client' 7, que no tiene ningún 'Loan' a su nombre.
+        ResponseEntity<?> delResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + DELETE_CLIENT_ID, HttpMethod.DELETE, null, Void.class);
 
-        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + DELETE_CLIENT_ID, HttpMethod.DELETE, null, Void.class);
+        ResponseEntity<List<ClientDto>> getResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.GET, null, responseType);
 
-        ResponseEntity<List<ClientDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.GET, null, responseType);
-        response.getBody().forEach((e) -> System.out.println(e.getId() + " / " + e.getName()));
-        assertNotNull(response);
-        assertEquals(6, response.getBody().size());
+        assertNotNull(getResponse);
+        assertEquals(6, getResponse.getBody().size());
     }
 
+    /**
+     * Borrar un {@code Client} que tenga algún {@code Loan} a su nombre debería devolver {@code HttpStatus.BAD_REQUEST}.
+     */
     @Test
-    public void deleteWithNotExistsIdShouldInternalError() {
+    public void deleteWhenIdExistsButHaveLoansShouldReturnError() {
+        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + WITH_LOANS_CLIENT_ID, HttpMethod.DELETE, null, Void.class);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    /**
+     * Borrar un {@code Client} que no exista debería devolver {@code HttpStatus.BAD_REQUEST}.
+     */
+    @Test
+    public void deleteWithIdNotExistsShouldReturnNotFoundError() {
 
         ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + NEW_CLIENT_ID, HttpMethod.DELETE, null, Void.class);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 }

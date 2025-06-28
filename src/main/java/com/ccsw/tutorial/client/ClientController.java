@@ -7,6 +7,7 @@ import com.ccsw.tutorial.dto.StatusResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Tag(name = "Client", description = "API of Client")
-@RequestMapping(value = "/clients")
+@RequestMapping(value = "/client")
 @RestController
 @CrossOrigin(origins = "*")
 public class ClientController {
@@ -52,7 +53,14 @@ public class ClientController {
     @Operation(summary = "Save", description = "Method that saves or updates a Client")
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
     public ResponseEntity<StatusResponse> save(@PathVariable(name = "id", required = false) Long id, @RequestBody ClientDto dto) {
-        return clientService.save(id, dto);
+        try {
+            return clientService.save(id, dto);
+        } catch (NullPointerException | DataIntegrityViolationException ex1) { // No se ha introducido algún campo obligatorio.
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
+        } catch (Exception ex2) { // Exception catch por defecto.
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
+        }
+
     }
 
     /**

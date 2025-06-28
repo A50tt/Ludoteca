@@ -6,8 +6,11 @@ import com.ccsw.tutorial.dto.StatusResponse;
 import com.ccsw.tutorial.loan.model.Loan;
 import com.ccsw.tutorial.loan.model.LoanDto;
 import com.ccsw.tutorial.loan.model.LoanSearchDto;
+import org.hibernate.TransientObjectException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -21,13 +24,14 @@ import java.util.List;
 public class LoanServiceImpl implements LoanService {
 
     private final Long MAX_LEND_DAYS = 14L;
-    private final String SAVED_SUCCESSFUL_MSG = "LOAN_SAVED";
     private final String SAVED_SUCCESSFUL_EXTENDED_MSG = "Préstamo guardado.";
-    private final String DELETE_SUCCESSFUL_MSG = "LOAN_DELETED";
     private final String DELETE_SUCCESSFUL_EXTENDED_MSG = "Préstamo borrado.";
 
-    @Autowired
-    LoanRepository loanRepository;
+    private final LoanRepository loanRepository;
+
+    public LoanServiceImpl(LoanRepository loanRepository) {
+        this.loanRepository = loanRepository;
+    }
 
     @Override
     public Loan get(Long id) {
@@ -47,12 +51,11 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public ResponseEntity<StatusResponse> save(LoanDto dto) {
-
-        // Se ha introducido un Loan sin startDate o endDate
-        if (dto.getStartDate() == null || dto.getEndDate() == null) {
+        // Se ha introducido un Loan sin 'Client', 'Game', 'startDate' o 'endDate'
+        if (dto.getStartDate() == null || dto.getEndDate() == null || dto.getClient().getId() == null || dto.getGame().getId() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
         }
-
+        // Debido a la cantidad de validaciones, se hacen en un método externo.
         StatusResponse response = validate(dto);
         if (response.getMessage().equals(StatusResponse.SUITABLE_REQUEST)) {
             try {
@@ -60,7 +63,9 @@ public class LoanServiceImpl implements LoanService {
                 BeanUtils.copyProperties(dto, loan);
                 this.loanRepository.save(loan);
                 return ResponseEntity.status(HttpStatus.OK).body(new StatusResponse(StatusResponse.OK_REQUEST_MSG, SAVED_SUCCESSFUL_EXTENDED_MSG));
-            } catch (Exception ex) {
+            } catch (InvalidDataAccessApiUsageException ex1) {
+                throw new InvalidDataAccessApiUsageException(null);
+            } catch (Exception ex2) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
             }
         }
@@ -83,34 +88,34 @@ public class LoanServiceImpl implements LoanService {
 
     private StatusResponse validate(LoanDto loanDto) {
         // DATE VALIDATIONS
-        // End Date es menor que Start Date: ERROR
+        // Si 'endDate' es menor que 'startDate' => ERROR
         System.out.println(loanDto.getEndDate().compareTo(loanDto.getStartDate()));
         if (loanDto.getEndDate().isBefore(loanDto.getStartDate())) {
             return new StatusResponse(LoanException.INVALID_END_DATE, LoanException.INVALID_END_DATE_EXTENDED);
         }
-        // Préstamo es mayor de 14 días: ERROR
+        // Si préstamo es mayor de 14 días => ERROR
         if (Period.between(loanDto.getStartDate(), loanDto.getEndDate()).getDays() > MAX_LEND_DAYS) {
             return new StatusResponse(LoanException.INVALID_PERIOD, LoanException.INVALID_PERIOD_EXTENDED);
         }
 
         // DB VALIDATIONS
-        // Define Specifications para el solapamiento de fechas y búsqueda de Game y Cliente.
+        // Define 'Specifications' para el solapamiento de 'dates' y búsqueda de 'Game' y 'Cliente'.
         Specification<Loan> startDateSpec = new LoanSpecification(new SearchCriteria("endDate", ">=", loanDto.getStartDate()));
         Specification<Loan> endDateSpec = new LoanSpecification(new SearchCriteria("startDate", "<=", loanDto.getEndDate()));
         Specification<Loan> gameSpec = new LoanSpecification(new SearchCriteria("game.id", ":", loanDto.getGame().getId()));
         Specification<Loan> clientSpec = new LoanSpecification(new SearchCriteria("client.id", ":", loanDto.getClient().getId()));
 
-        // El juego no puede estar ya prestado en ninguno de los días del período seleccionado: ERROR
+        // El 'Game' está prestado en cualquiera de los días del período seleccionado => ERROR
         List<Loan> loansSamePeriodSameGame = this.loanRepository.findAll(startDateSpec.and(endDateSpec).and(gameSpec));
         if (!loansSamePeriodSameGame.isEmpty()) {
             return new StatusResponse(LoanException.GAME_ALREADY_LENT, LoanException.GAME_ALREADY_LENT_EXTENDED);
         }
 
-        // Un mismo cliente no puede tener prestados más de 2 juegos en un mismo día: ERROR
+        // El 'Client' tiene prestados más de 2 'Games' en un mismo día del período => ERROR
         List<Loan> loansSamePeriodSameClient = this.loanRepository.findAll(startDateSpec.and(endDateSpec).and(clientSpec));
         if (loansSamePeriodSameClient.size() >= 2) {
             return new StatusResponse(LoanException.LOAN_LIMIT_EXCEEDED, LoanException.LOAN_LIMIT_EXCEEDED_EXTENDED);
         }
-        return new StatusResponse(StatusResponse.SUITABLE_REQUEST);
+        return new StatusResponse(StatusResponse.SUITABLE_REQUEST); // Se espera un 'StatusResponse', por lo que enviamos validación.
     }
 }

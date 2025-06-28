@@ -55,23 +55,30 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public ResponseEntity<StatusResponse> save(Long id, CategoryDto dto) {
-        // Tenemos en cuenta si es edición o creación de Autor para devolver el mensaje correspondiente.
+        // Se ha introducido un Category sin 'name'
+        if (dto.getName().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
+        }
+
+        // Tenemos en cuenta si es edición o creación de 'Category' para devolver el mensaje correspondiente.
         Category category;
         boolean isUpdate = false;
 
+        // Recuperamos una 'Category' con ese 'id' en la BBDD si existe y definimos la operación como UPDATE.
+        // Si no existe, la inicializamos sin valores.
         if (id == null) {
-            category = new Category();
+            category = new Category(); // Inicializamos el objeto (sin valores).
         } else {
             category = this.get(id);
-            if (category != null) {
+            if (category != null) { // Si se ha encontrado una 'Category' con ese 'id' en la BBDD, es UPDATE.
                 isUpdate = true;
             }
         }
-        // category.setName(dto.getName()); not necessary??
         BeanUtils.copyProperties(dto, category, "id");
+        category.setName(dto.getName());
 
         try {
-            this.categoryRepository.save(category);
+            this.categoryRepository.save(category); // Si da Exception o no y según UPDATE, devuelve un body u otro.
             if (isUpdate) {
                 return ResponseEntity.status(HttpStatus.OK).body(new StatusResponse(StatusResponse.OK_REQUEST_MSG, EDIT_SUCCESSFUL_EXT_MSG));
             }
@@ -89,10 +96,8 @@ public class CategoryServiceImpl implements CategoryService {
 
         if (this.get(id) == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new StatusResponse(CategoryException.CATEGORY_ID_NOT_FOUND, CategoryException.CATEGORY_ID_NOT_FOUND_EXTENDED));
-        }
-        if (helper.findGamesByCategory(id)) {
+        } else if (helper.findGamesByCategory(id)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CategoryException.CATEGORY_HAS_GAMES, CategoryException.CATEGORY_HAS_GAMES_EXTENDED));
-
         }
         try {
             categoryRepository.deleteById(id);

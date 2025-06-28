@@ -7,8 +7,11 @@ import com.ccsw.tutorial.loan.model.LoanDto;
 import com.ccsw.tutorial.loan.model.LoanSearchDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.hibernate.TransientObjectException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
@@ -25,11 +28,14 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*")
 public class LoanController {
 
-    @Autowired
-    LoanService loanService;
+    private final LoanService loanService;
 
-    @Autowired
-    ModelMapper mapper;
+    private final ModelMapper mapper;
+
+    public LoanController(LoanService loanService, ModelMapper mapper) {
+        this.loanService = loanService;
+        this.mapper = mapper;
+    }
 
     /**
      * Método para recuperar una {@link List} de {@link Loan}
@@ -82,7 +88,7 @@ public class LoanController {
     public ResponseEntity<StatusResponse> save(@RequestBody LoanDto dto) {
         try {
             return loanService.save(dto);
-        } catch (HttpMessageNotReadableException ex) {
+        } catch (NullPointerException | DataIntegrityViolationException | HttpMessageNotReadableException | InvalidDataAccessApiUsageException ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
         } catch (Exception ex2) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));

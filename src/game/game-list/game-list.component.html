@@ -2,7 +2,7 @@
     <h1>Catálogo de juegos</h1>
 
     <div class="filters">
-        <form>
+        <form (keyup.enter)="onSearch()">
             <mat-form-field>
                 <mat-label>Título del juego</mat-label>
                 <input

@@ -79,7 +79,7 @@ export class LoanEditComponent implements OnInit {
   }
 
   onSave() {
-    // Si startDate o endDate no están definidos, fuerza el validation check
+    // Si startDate o endDate no están definidos por el usuario, fuerza el validation check y no envía al servidor.
     if (!this.loan.startDate || !this.loan.endDate) {
       const startDateInput = document.querySelector('[name="startDate"]') as HTMLElement;
       const endDateInput = document.querySelector('[name="endDate"]') as HTMLElement;
@@ -89,9 +89,8 @@ export class LoanEditComponent implements OnInit {
 
       endDateInput?.focus();
       endDateInput?.blur();
-    }
-    
-    this.loanService.saveLoan(this.loan).subscribe({
+    } else {
+      this.loanService.saveLoan(this.loan).subscribe({
       next: (result) => {
         this.alertService.success(result.extendedMessage);
         this.dialogRef.close();
@@ -100,6 +99,7 @@ export class LoanEditComponent implements OnInit {
         this.errDialogService.openMsgErrorDialog(err.error.message, err.error.extendedMessage);
       }
     });
+    }
   }
 
   onClose() {

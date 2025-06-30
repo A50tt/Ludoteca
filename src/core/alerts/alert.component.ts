@@ -30,7 +30,10 @@ export class AlertComponent implements OnInit, OnDestroy {
                     return;
                 }
 
-                // add alert to array
+                // add alert to array (pero haz POP si ya hay una presente)
+                if (this.alerts.length > 0) {
+                    this.alerts.pop();
+                }
                 this.alerts.push(alert);
 
                 // auto close alert if required

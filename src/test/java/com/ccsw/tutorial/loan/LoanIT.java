@@ -1,12 +1,20 @@
 package com.ccsw.tutorial.loan;
 
+import com.ccsw.tutorial.client.ClientService;
 import com.ccsw.tutorial.client.model.Client;
+import com.ccsw.tutorial.client.model.ClientDto;
 import com.ccsw.tutorial.common.pagination.PageableRequest;
 import com.ccsw.tutorial.config.ResponsePage;
+import com.ccsw.tutorial.dto.StatusResponse;
+import com.ccsw.tutorial.game.GameService;
 import com.ccsw.tutorial.game.model.Game;
+import com.ccsw.tutorial.game.model.GameDto;
+import com.ccsw.tutorial.loan.model.Loan;
 import com.ccsw.tutorial.loan.model.LoanDto;
 import com.ccsw.tutorial.loan.model.LoanSearchDto;
+import jakarta.validation.constraints.Null;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -20,9 +28,9 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -32,12 +40,15 @@ public class LoanIT {
     private static final int PAGE_SIZE = 5;
 
     private static final LocalDate NEW_START_DATE = LocalDate.now();
-    private static final LocalDate NEW_END_DATE = LocalDate.now().plusDays(7);
+    private static final LocalDate NEW_END_DATE = LocalDate.now().plusDays(6);
 
     private static final Long EXISTENT_LOAN_ID = 1L;
+    private static final Long NON_EXISTENT_LOAN_ID = 99L;
 
+    private static final String EXISTENT_CLIENT_NAME = "Cliente 5";
     private static final Long EXISTENT_CLIENT_ID = 5L;
-    private static final Long EXISTENT_GAME_ID = 5L;
+    private static final String EXISTENT_GAME_TITLE = "Los viajes de Marco Polo";
+    private static final Long EXISTENT_GAME_CATEGORY_ID = 1L;
 
     private static final Long NON_EXISTENT_CLIENT_ID = 99L;
     private static final Long NON_EXISTENT_GAME_ID = 99L;
@@ -54,8 +65,20 @@ public class LoanIT {
     ParameterizedTypeReference<List<LoanDto>> loanListResponse = new ParameterizedTypeReference<List<LoanDto>>() {
     };
 
+    ParameterizedTypeReference<LoanDto> loanResponse = new ParameterizedTypeReference<LoanDto>() {
+    };
+
     ParameterizedTypeReference<ResponsePage<LoanDto>> responsePageResponse = new ParameterizedTypeReference<ResponsePage<LoanDto>>() {
     };
+
+    ParameterizedTypeReference<StatusResponse> statusResponse = new ParameterizedTypeReference<StatusResponse>() {
+    };
+    @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
+    private GameService gameService;
+    @Autowired
+    private ClientService clientService;
 
     /**
      * {@code findAll()} debería devolver un {@code List<Loan>} de los {@code Loan} guardados en la BBDD.
@@ -118,7 +141,7 @@ public class LoanIT {
         Client client = new Client();
         client.setId(EXISTENT_CLIENT_ID);
         Game game = new Game();
-        game.setId(EXISTENT_GAME_ID);
+        game.setId(EXISTENT_GAME_CATEGORY_ID);
         dto.setStartDate(NEW_START_DATE);
         dto.setEndDate(NEW_END_DATE);
         dto.setClient(client);
@@ -143,40 +166,73 @@ public class LoanIT {
     /**
      *  Si se hace {@code save()} de un {@code Loan} con {@code id} existente, debería modificar un {@code Loan} de la BBDD.
      */
-    //TODO no va
     @Test
     public void saveWithExistingIdShouldModifyExistingLoan() {
-        
+        LoanDto dto = new LoanDto();
+        dto.setId(EXISTENT_LOAN_ID);
+        dto.setClient(clientService.get(EXISTENT_CLIENT_ID));
+        dto.setGame(gameService.find(EXISTENT_GAME_TITLE, EXISTENT_GAME_CATEGORY_ID).getFirst());
+        dto.setStartDate(NEW_START_DATE.plusDays(new Random().nextInt(5) + 1));
+        dto.setEndDate(NEW_END_DATE.plusDays(new Random().nextInt(5) + 1));
+
+        ResponseEntity<StatusResponse> saveResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(dto), statusResponse);
+
+        assertNotNull(saveResponse);
+        assertEquals(HttpStatus.OK, saveResponse.getStatusCode());
+
+        ResponseEntity<LoanDto> findResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + EXISTENT_LOAN_ID, HttpMethod.GET, null, loanResponse);
+        assertNotNull(findResponse);
+        assertEquals(dto.getStartDate(), findResponse.getBody().getStartDate());
     }
 
     /**
-     *  Si se hace {@code save()} de un {@code Loan} con {@code id} que no existe, debería devolver un {@code HttpStatus.BAD_REQUEST}.
+     *  Si se hace {@code save()} de un {@code Loan} con {@code id} que no existe, debería devolver un {@code HttpStatus.BAD_REQUEST} y guardarlo.
      */
     @Test
     public void saveWithNonExistingIdShouldReturnBadRequestError() {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
+        LoanDto dto = new LoanDto();
+        dto.setId(NON_EXISTENT_LOAN_ID);
+        dto.setClient(clientService.get(EXISTENT_CLIENT_ID));
+        dto.setGame(gameService.find(EXISTENT_GAME_TITLE, EXISTENT_GAME_CATEGORY_ID).getFirst());
+        dto.setStartDate(NEW_START_DATE);
+        dto.setEndDate(NEW_END_DATE);
+
+        ResponseEntity<StatusResponse> saveResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(dto), statusResponse);
+
+        assertNotNull(saveResponse);
+        assertEquals(HttpStatus.BAD_REQUEST, saveResponse.getStatusCode());
     }
 
-    private void setUpLoan(LoanDto dto, boolean exists) {
-        if (exists) {
-            dto.setId(EXISTENT_LOAN_ID);
-            Client client = new Client();
-            client.setId(EXISTENT_CLIENT_ID);
-            Game game = new Game();
-            game.setId(EXISTENT_GAME_ID);
-            dto.setStartDate(NEW_START_DATE);
-            dto.setEndDate(NEW_END_DATE);
-            dto.setClient(client);
-            dto.setGame(game);
-        } else {
-            Client client = new Client();
-            client.setId(NON_EXISTENT_CLIENT_ID);
-            Game game = new Game();
-            game.setId(NON_EXISTENT_GAME_ID);
-            dto.setStartDate(NEW_START_DATE);
-            dto.setEndDate(NEW_END_DATE);
-            dto.setClient(client);
-            dto.setGame(game);
-        }
+    /**
+     *  Si se hace {@code delete()} de un {@code Loan} con {@code id} que existe, debería devolver un {@code HttpStatus.OK} y borrarlo.
+     */
+    @Test
+    public void deleteWithExistingIdShouldReturnOk() {
+
+        ResponseEntity<LoanDto> dto = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + EXISTENT_CLIENT_ID, HttpMethod.GET, null, loanResponse);
+        assertNotNull(dto);
+
+        ResponseEntity<StatusResponse> deleteResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + EXISTENT_CLIENT_ID, HttpMethod.DELETE, null, statusResponse);
+        assertEquals(HttpStatus.OK, deleteResponse.getStatusCode());
+
+        assertNotNull(deleteResponse);
+        assertEquals(HttpStatus.OK, deleteResponse.getStatusCode());
+
+        ResponseEntity<LoanDto> getResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + EXISTENT_CLIENT_ID, HttpMethod.GET, null, loanResponse);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, getResponse.getStatusCode());
+    }
+
+    /**
+     *  Si se hace {@code delete()} de un {@code Loan} con {@code id} que no existe, debería devolver un {@code HttpStatus.INTERNAL_SERVER_ERROR}.
+     */
+    @Test
+    public void deleteWithExistingIdShouldReturnBadRequestError() {
+
+        ResponseEntity<LoanDto> dto = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + EXISTENT_CLIENT_ID, HttpMethod.GET, null, loanResponse);
+        assertNotNull(dto);
+
+        ResponseEntity<StatusResponse> deleteResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + NON_EXISTENT_CLIENT_ID, HttpMethod.DELETE, null, statusResponse);
+        assertNotNull(deleteResponse);
+        assertEquals(HttpStatus.BAD_REQUEST, deleteResponse.getStatusCode());
     }
 }

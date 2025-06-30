@@ -1,6 +1,8 @@
 package com.ccsw.tutorial.loan;
 
 import com.ccsw.tutorial.client.model.Client;
+import com.ccsw.tutorial.common.exception.CommonException;
+import com.ccsw.tutorial.dto.StatusResponse;
 import com.ccsw.tutorial.game.model.Game;
 import com.ccsw.tutorial.loan.model.Loan;
 import com.ccsw.tutorial.loan.model.LoanDto;
@@ -14,8 +16,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,25 +51,71 @@ public class LoanTest {
      */
     @Test
     public void saveValidLoanShouldSave() {
-        //Arrange
+        // Arrange
+        Client mockClient = mock(Client.class);
+        Game mockGame = mock(Game.class);
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plusDays(4);
+
         LoanDto loanDto = new LoanDto();
-        loanDto.setClient(mock(Client.class));
-        loanDto.setGame(mock(Game.class));
-        loanDto.setStartDate(LocalDate.now());
-        loanDto.setEndDate(LocalDate.now().plusDays(4));
+        loanDto.setClient(mockClient);
+        loanDto.setGame(mockGame);
+        loanDto.setStartDate(startDate);
+        loanDto.setEndDate(endDate);
 
-        Loan loan = new Loan();
-        loan.setClient(loanDto.getClient());
-        loan.setGame(loanDto.getGame());
-        loan.setStartDate(loanDto.getStartDate());
-        loan.setEndDate(loanDto.getEndDate());
+        Loan expectedLoan = new Loan();
+        expectedLoan.setClient(mockClient);
+        expectedLoan.setGame(mockGame);
+        expectedLoan.setStartDate(startDate);
+        expectedLoan.setEndDate(endDate);
 
-        when(loanRepository.save(any(Loan.class))).thenReturn(loan);
+        when(loanRepository.save(any(Loan.class))).thenReturn(expectedLoan);
 
-        loanService.save(loanDto);
+        // Act
+        StatusResponse response = loanService.save(loanDto);
 
+        // Assert
         verify(loanRepository).save(any(Loan.class));
+        assertNotNull(response);
+        assertEquals(StatusResponse.OK_REQUEST_MSG, response.getMessage());
+    }
 
-        assertEquals(loan.getId(), loanDto.getId());
+    /**
+     * {@code save()} un {@code Loan} sin alguno de los datos debería devolver error.
+     */
+    @Test
+    public void saveInvalidLoanShouldReturnError() {
+        // Arrange
+        Client mockClient = mock(Client.class);
+        Game mockGame = mock(Game.class);
+
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plusDays(4);
+
+
+        LoanDto loanDto1 = new LoanDto(); // Sin Client
+        loanDto1.setGame(mockGame);
+        loanDto1.setStartDate(startDate);
+        loanDto1.setEndDate(endDate);
+
+        LoanDto loanDto2 = new LoanDto(); // Sin Game
+        loanDto2.setClient(mockClient);
+        loanDto2.setStartDate(startDate);
+        loanDto2.setEndDate(endDate);
+
+        LoanDto loanDto3 = new LoanDto(); // Sin StartDate
+        loanDto3.setClient(mockClient);
+        loanDto3.setGame(mockGame);
+        loanDto3.setEndDate(endDate);
+
+        LoanDto loanDto4 = new LoanDto(); // Sin EndDate
+        loanDto4.setClient(mockClient);
+        loanDto4.setGame(mockGame);
+        loanDto4.setEndDate(endDate);
+
+        assertEquals(CommonException.MISSING_REQUIRED_FIELDS, loanService.save(loanDto1).getMessage());
+        assertEquals(CommonException.MISSING_REQUIRED_FIELDS, loanService.save(loanDto2).getMessage());
+        assertEquals(CommonException.MISSING_REQUIRED_FIELDS, loanService.save(loanDto3).getMessage());
+        assertEquals(CommonException.MISSING_REQUIRED_FIELDS, loanService.save(loanDto4).getMessage());
     }
 }

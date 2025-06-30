@@ -7,6 +7,7 @@ public class StatusResponse {
     public static final String OK_REQUEST_MSG = "Request successful.";
     public static final String KO_REQUEST_MSG = "Error in request."; // No se usa en realidad, porque cada clase tiene su propia clase Exception.
 
+    public StatusResponse() {}
     public StatusResponse(String message) {
         this.message = message;
     }

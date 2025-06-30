@@ -47,7 +47,7 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public StatusResponse save(LoanDto dto) {
         // Se ha introducido un Loan sin 'Client', 'Game', 'startDate' o 'endDate'
-        if (dto.getStartDate() == null || dto.getEndDate() == null || dto.getClient().getId() == null || dto.getGame().getId() == null) {
+        if (dto.getStartDate() == null || dto.getEndDate() == null || dto.getClient() == null || dto.getGame() == null) {
             return new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED);
         }
         // Debido a la cantidad de validaciones, se hacen en un método externo para tener un código más modularizable.

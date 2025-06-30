@@ -2,7 +2,6 @@ package com.ccsw.tutorial.client;
 
 import com.ccsw.tutorial.client.model.Client;
 import com.ccsw.tutorial.client.model.ClientDto;
-import com.ccsw.tutorial.common.exception.CommonException;
 import com.ccsw.tutorial.dto.StatusResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,15 +10,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -82,20 +80,17 @@ public class ClientTest {
         existentClientDto.setName(CLIENT_NAME);
 
         // Configura para que el primer 'save()' se comporte distinto al segundo.
-        when(clientRepository.findAll(any(Specification.class)))
-                .thenReturn(Collections.emptyList())  // Para el primer 'save()' ('name' no existe) devuelve una empty list.
+        when(clientRepository.findAll(any(Specification.class))).thenReturn(Collections.emptyList())  // Para el primer 'save()' ('name' no existe) devuelve una empty list.
                 .thenReturn(List.of(new Client()));  // Para el primer 'save()' ('name' ahora existe) devuelve una 'List' de 'Client's.
 
         // El primero debería haber tenido éxito
-        ResponseEntity<StatusResponse> result1 = clientService.save(null, firstClientDto);
+        StatusResponse result1 = clientService.save(null, firstClientDto);
         // Captura el resultado del segundo 'save()', que debería fallar
-        ResponseEntity<StatusResponse> result2 = clientService.save(null, existentClientDto);
+        StatusResponse result2 = clientService.save(null, existentClientDto);
 
-        assertEquals(HttpStatus.OK, result1.getStatusCode());
-        assertEquals(result1.getBody().getMessage(), StatusResponse.OK_REQUEST_MSG);
+        assertEquals(result1.getMessage(), StatusResponse.OK_REQUEST_MSG);
 
-        assertEquals(HttpStatus.BAD_REQUEST, result2.getStatusCode());
-        assertEquals(result2.getBody().getMessage(), ClientException.NAME_ALREADY_EXISTS);
+        assertEquals(result2.getMessage(), ClientException.NAME_ALREADY_EXISTS);
     }
 
     /**
@@ -115,7 +110,7 @@ public class ClientTest {
      */
     @Test
     public void deleteClienteNotExistsShouldReturnClientNotFound() {
-        ResponseEntity<StatusResponse> response = clientService.delete(NON_EXISTENT_CLIENT_ID);
-        assertEquals(response.getBody().getMessage(), ClientException.CLIENT_ID_NOT_FOUND);
+        StatusResponse response = clientService.delete(NON_EXISTENT_CLIENT_ID);
+        assertEquals(response.getMessage(), ClientException.CLIENT_ID_NOT_FOUND);
     }
 }

@@ -7,9 +7,7 @@ import com.ccsw.tutorial.loan.model.LoanDto;
 import com.ccsw.tutorial.loan.model.LoanSearchDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.hibernate.TransientObjectException;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
@@ -87,7 +85,14 @@ public class LoanController {
     @RequestMapping(path = { "" }, method = RequestMethod.PUT)
     public ResponseEntity<StatusResponse> save(@RequestBody LoanDto dto) {
         try {
-            return loanService.save(dto);
+            StatusResponse response = loanService.save(dto);
+            if (response.getMessage().equals(StatusResponse.OK_REQUEST_MSG)) {
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            } else if (response.getMessage().equals(LoanException.ID_NOT_EXIST)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
         } catch (NullPointerException | DataIntegrityViolationException | HttpMessageNotReadableException | InvalidDataAccessApiUsageException ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
         } catch (Exception ex2) {
@@ -105,7 +110,12 @@ public class LoanController {
     @RequestMapping(path = { "/{id}" }, method = RequestMethod.DELETE)
     public ResponseEntity<StatusResponse> delete(@PathVariable Long id) {
         try {
-            return loanService.delete(id);
+            StatusResponse response = loanService.delete(id);
+            if (response.getMessage().equals(StatusResponse.OK_REQUEST_MSG)) {
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
         } catch (NullPointerException ex1) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
         } catch (Exception ex2) {

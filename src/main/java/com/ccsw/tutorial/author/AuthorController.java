@@ -71,7 +71,12 @@ public class AuthorController {
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
     public ResponseEntity<StatusResponse> save(@PathVariable(name = "id", required = false) Long id, @RequestBody AuthorDto dto) {
         try {
-            return this.authorService.save(id, dto);
+            StatusResponse response = this.authorService.save(id, dto);
+            if (response.getMessage().equals(StatusResponse.OK_REQUEST_MSG)) {
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
         } catch (NullPointerException | DataIntegrityViolationException ex1) { // No se ha introducido algún campo obligatorio.
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
         } catch (Exception ex2) { // Exception catch por defecto.
@@ -89,11 +94,18 @@ public class AuthorController {
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<StatusResponse> delete(@PathVariable("id") Long id) throws Exception {
         try {
-            return this.authorService.delete(id);
-        } catch (NullPointerException | SQLIntegrityConstraintViolationException ex1) {
+            StatusResponse response = this.authorService.delete(id);
+            if (response.getMessage().equals(StatusResponse.OK_REQUEST_MSG)) {
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            } else if (response.getMessage().equals(AuthorException.AUTHOR_ID_NOT_FOUND)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+        } catch (SQLIntegrityConstraintViolationException ex1) { // NullPointerException es del service
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
         } catch (Exception ex2) {
-            return null;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
         }
     }
 }

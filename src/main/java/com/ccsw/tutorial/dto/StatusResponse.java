@@ -4,8 +4,8 @@ public class StatusResponse {
     private String message;
     private String extendedMessage;
 
-    public static final String SUITABLE_REQUEST = "REQUEST VALIDATED";
     public static final String OK_REQUEST_MSG = "Request successful.";
+    public static final String KO_REQUEST_MSG = "Error in request."; // No se usa en realidad, porque cada clase tiene su propia clase Exception.
 
     public StatusResponse(String message) {
         this.message = message;

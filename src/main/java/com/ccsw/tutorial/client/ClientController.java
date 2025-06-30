@@ -54,13 +54,17 @@ public class ClientController {
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
     public ResponseEntity<StatusResponse> save(@PathVariable(name = "id", required = false) Long id, @RequestBody ClientDto dto) {
         try {
-            return clientService.save(id, dto);
+            StatusResponse response = clientService.save(id, dto);
+            if (response.getMessage().equals(StatusResponse.OK_REQUEST_MSG)) {
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
         } catch (NullPointerException | DataIntegrityViolationException ex1) { // No se ha introducido algún campo obligatorio.
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
         } catch (Exception ex2) { // Exception catch por defecto.
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
         }
-
     }
 
     /**
@@ -73,11 +77,18 @@ public class ClientController {
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<StatusResponse> delete(@PathVariable("id") Long id) throws Exception {
         try {
-            return this.clientService.delete(id);
+            StatusResponse response = this.clientService.delete(id);
+            if (response.getMessage().equals(StatusResponse.OK_REQUEST_MSG)) {
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            } else if (response.getMessage().equals(ClientException.CLIENT_ID_NOT_FOUND)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
         } catch (NullPointerException ex1) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
         } catch (Exception ex2) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
         }
     }
 }

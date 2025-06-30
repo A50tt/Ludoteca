@@ -3,7 +3,6 @@ package com.ccsw.tutorial.game;
 import com.ccsw.tutorial.dto.StatusResponse;
 import com.ccsw.tutorial.game.model.Game;
 import com.ccsw.tutorial.game.model.GameDto;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -30,6 +29,6 @@ public interface GameService {
      * @param dto datos de la entidad
      * @return ResponseEntity - Respuesta {@link StatusResponse} del servidor.
      */
-    ResponseEntity<StatusResponse> save(Long id, GameDto dto);
+    StatusResponse save(Long id, GameDto dto);
 
 }

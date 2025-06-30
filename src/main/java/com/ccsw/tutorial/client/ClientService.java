@@ -3,7 +3,6 @@ package com.ccsw.tutorial.client;
 import com.ccsw.tutorial.client.model.Client;
 import com.ccsw.tutorial.client.model.ClientDto;
 import com.ccsw.tutorial.dto.StatusResponse;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -32,7 +31,7 @@ public interface ClientService {
      * @param dto datos de la entidad
      * @return ResponseEntity - Respuesta {@link StatusResponse} del servidor.
      */
-    ResponseEntity<StatusResponse> save(Long id, ClientDto dto);
+    StatusResponse save(Long id, ClientDto dto);
 
     /**
      * Método para borrar un {@link Client}
@@ -40,5 +39,5 @@ public interface ClientService {
      * @param id PK de la entidad
      * @return ResponseEntity - Respuesta {@link StatusResponse} del servidor.
      */
-    ResponseEntity<StatusResponse> delete(Long id) throws Exception;
+    StatusResponse delete(Long id) throws Exception;
 }

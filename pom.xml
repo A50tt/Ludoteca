@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.ccsw</groupId>
-    <artifactId>tutorial</artifactId>
+    <artifactId>Ludoteca</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>tutorial</name>
     <description>Tutorial project for Spring Boot</description>

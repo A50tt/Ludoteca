@@ -9,10 +9,14 @@ import com.ccsw.ludoteca.loan.model.LoanSearchDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
 public class LoanServiceImpl implements LoanService {
@@ -40,8 +44,35 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public Page<Loan> findPage(LoanSearchDto dto) {
-
         return this.loanRepository.findAll(dto.getPageable().getPageable());
+    }
+
+    @Override
+    public Page<Loan> findPageWithFilters(LoanSearchDto dto) {
+        Specification<Loan> spec = Specification.where(null);
+
+        // Agregar las 'Specifications' según si se han especificado o no.
+        if (dto.getDate() != null) {
+            spec = spec.and(new LoanSpecification(
+                    new SearchCriteria("startDate", "<=", dto.getDate())));
+            spec = spec.and(new LoanSpecification(
+                    new SearchCriteria("endDate", ">=", dto.getDate())));
+        }
+
+        if (dto.getGameTitle() != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.like(cb.lower(root.get("game").get("title")),
+                            "%" + dto.getGameTitle().toLowerCase() + "%"));
+        }
+
+        if (dto.getClientName() != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.like(cb.lower(root.get("client").get("name")),
+                            "%" + dto.getClientName().toLowerCase() + "%"));
+        }
+
+        // Aplicar 'Specification' junto con al 'Pageable.
+        return this.loanRepository.findAll(spec, dto.getPageable().getPageable());
     }
 
     @Override

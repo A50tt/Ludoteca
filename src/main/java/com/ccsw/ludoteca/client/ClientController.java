@@ -36,9 +36,9 @@ public class ClientController {
      */
     @Operation(summary = "Find", description = "Method that return a list of Clients")
     @RequestMapping(path = "", method = RequestMethod.GET)
-    public List<ClientDto> findAll() {
-
-        List<Client> clients = this.clientService.findAll();
+    public List<ClientDto> findAll(@RequestParam(value = "name", required = false) String clientName) {
+//      List<Client> clients = clientService.findAll();
+        List<Client> clients = clientService.findByName(clientName);
 
         return clients.stream().map(e -> mapper.map(e, ClientDto.class)).collect(Collectors.toList());
     }

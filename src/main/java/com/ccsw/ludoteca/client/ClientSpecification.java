@@ -20,6 +20,9 @@ public class ClientSpecification implements Specification<Client> {
         if (criteria.getOperation().equalsIgnoreCase(":") && criteria.getValue() != null) {
             Path<String> path = getPath(root);
             return builder.equal(builder.lower(path), criteria.getValue().toString().toLowerCase());
+        } else if (criteria.getOperation().equalsIgnoreCase("%") && criteria.getValue() != null) {
+            Path<String> path = getPath(root);
+            return builder.like(builder.lower(path), "%" + criteria.getValue().toString().toLowerCase() + "%");
         }
         return null;
     }

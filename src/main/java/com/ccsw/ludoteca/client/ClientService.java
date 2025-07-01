@@ -17,6 +17,14 @@ public interface ClientService {
     Client get(Long id);
 
     /**
+     * Recupera un {@link Client[]} a partir de coincidencia con su name
+     *
+     * @param name nombre de la entidad
+     * @return {@link Client[]}
+     */
+    List<Client> findByName(String name);
+
+    /**
      * Método para recuperar todos los {@link Client}
      *
      * @return {@link List} de {@link Client}

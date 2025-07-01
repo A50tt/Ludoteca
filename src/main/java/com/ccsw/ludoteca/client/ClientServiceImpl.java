@@ -42,6 +42,13 @@ public class ClientServiceImpl implements ClientService {
         return this.clientRepository.findById(id).orElse(null);
     }
 
+    @Override
+    public List<Client> findByName(String name) {
+        Specification<Client> nameSpec = new ClientSpecification(new SearchCriteria("name", "%", name));
+        List<Client> listaClientes = clientRepository.findAll(nameSpec.and(nameSpec));
+        return listaClientes;
+    }
+
     /**
      * {@inheritDoc}
      */

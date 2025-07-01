@@ -39,7 +39,8 @@ public class GameServiceImpl implements GameService {
     public List<Game> find(String title, Long idCategory) {
         GameSpecification titleSpec = new GameSpecification(new SearchCriteria("title", ":", title));
         GameSpecification categorySpec = new GameSpecification(new SearchCriteria("category.id", ":", idCategory));
-        return this.gameRepository.findAll(titleSpec.and(categorySpec));
+        List<Game> gameList = this.gameRepository.findAll(titleSpec.and(categorySpec));
+        return gameList;
     }
 
     @Override

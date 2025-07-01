@@ -1,7 +1,9 @@
 package com.ccsw.ludoteca.loan;
 
+import com.ccsw.ludoteca.client.model.Client;
 import com.ccsw.ludoteca.common.exception.CommonException;
 import com.ccsw.ludoteca.dto.StatusResponse;
+import com.ccsw.ludoteca.game.model.Game;
 import com.ccsw.ludoteca.loan.model.Loan;
 import com.ccsw.ludoteca.loan.model.LoanDto;
 import com.ccsw.ludoteca.loan.model.LoanSearchDto;
@@ -17,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,16 +65,19 @@ public class LoanController {
     }
 
     /**
-     * Método para recuperar un listado paginado de {@link Loan}
+     * Método para recuperar un listado paginado de {@link Loan} con filtros de fecha {@link LocalDate} {@link Client} y {@link Game}.
      *
      * @param dto dto de búsqueda
      * @return {@link Page} de {@link LoanDto}
      */
     @Operation(summary = "Find Page", description = "Method that return a page of Loans")
     @RequestMapping(path = "", method = RequestMethod.POST)
-    public Page<LoanDto> findPage(@RequestBody LoanSearchDto dto) {
+    public Page<LoanDto> findPage(@RequestBody LoanSearchDto dto, @RequestParam(value = "gameTitle", required = false) String gameTitle, @RequestParam(value = "clientName", required = false) String clientName, @RequestParam(value = "date", required = false) LocalDate existsAtDate) {
+        dto.setGameTitle(gameTitle);
+        dto.setClientName(clientName);
+        dto.setDate(existsAtDate);
 
-        Page<Loan> page = this.loanService.findPage(dto);
+        Page<Loan> page = this.loanService.findPageWithFilters(dto);
 
         return new PageImpl<>(page.getContent().stream().map(e -> mapper.map(e, LoanDto.class)).collect(Collectors.toList()), page.getPageable(), page.getTotalElements());
     }

@@ -6,6 +6,7 @@ import com.ccsw.ludoteca.loan.model.LoanDto;
 import com.ccsw.ludoteca.loan.model.LoanSearchDto;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface LoanService {
@@ -22,7 +23,22 @@ public interface LoanService {
      */
     public List<Loan> findAll();
 
+    /**
+     * Devuelve todos los {@code loan} de la base de datos.
+     *
+     * @return List de {@code loan} en la base de datos.
+     */
     Page<Loan> findPage(LoanSearchDto dto);
+
+    /**
+     * Devuelve todos los {@code loan} de la base de datos con los siguientes filtros opcionales:
+     * Que estén activos en una fecha {@code LocalDate} concreta.
+     * Que contengan {@code title} de {@code Game}.
+     * Que contengan un {@code name} de {@code Client}.
+     *
+     * @return List de {@code loan} en la base de datos.
+     */
+    Page<Loan> findPageWithFilters(LoanSearchDto dto);
 
     /**
      * Guarda o actualiza el {@link Loan} dependiendo de si ya existe en la base de datos.

@@ -66,8 +66,7 @@ export class LoanEditComponent implements OnInit {
     private alertService: AlertService,
     private errDialogService: DialogMessageService,
   ) {
-    this.dateAdapter.setLocale('es-ES'); // Explicitly set the locale
-    console.log('Locale set to es-ES');
+    this.dateAdapter.setLocale('es-ES');
   }
 
   ngOnInit(): void {

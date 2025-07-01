@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { Client } from './model/Client';
-import { CLIENT_DATA } from './model/mock-clients';
 import { StatusResponse } from '../core/model/StatusResponse';
 
 @Injectable({
@@ -14,8 +13,8 @@ export class ClientService {
 
   private baseUrl = 'http://localhost:8080/client';
 
-  getClients(): Observable<Client[]> {
-    return this.http.get<Client[]>(this.baseUrl);
+  getClients(name?: string): Observable<Client[]> {
+    return this.http.get<Client[]>(this.composeFindUrl(name));
   }
 
   saveClient(client: Client): Observable<StatusResponse> {
@@ -27,4 +26,13 @@ export class ClientService {
   deleteClient(id: Number): Observable<StatusResponse> {
     return this.http.delete<StatusResponse>(`${this.baseUrl}/${id}`);
   }
+
+  private composeFindUrl(name?: string): string {
+        const params = new URLSearchParams();
+        if (name) {
+            params.set('name', name);
+        }
+        const queryString = params.toString();
+        return queryString ? `${this.baseUrl}?${queryString}` : this.baseUrl;
+    }
 }

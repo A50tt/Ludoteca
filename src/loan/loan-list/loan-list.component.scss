@@ -1,6 +1,26 @@
 .container {
     margin: 20px;
     max-width: 90%;
+    .filters {
+        display: flex;
+
+        mat-form-field {
+            width: 300px;
+            margin-right: 20px;
+        }
+
+        .buttons {
+            flex: auto;
+            align-self: center;
+            .mdc-button {
+                width: 200px;
+            }
+            
+            button {
+                margin-left: 15px;
+            }
+        }
+    }
     mat-table {
         margin-top: 10px;
         margin-bottom: 20px;
@@ -27,4 +47,13 @@
     .buttons {
         text-align: right;
     }
+
+    .date-fields {
+    display: flex;
+    gap: 5px;
+
+    mat-form-field {
+        flex: 1;
+    }
+}
 }

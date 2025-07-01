@@ -1,6 +1,51 @@
 <div class="container">
     <h1>Listado de Préstamos</h1>
 
+    <div class="filters">
+        <form (keydown.enter)="onSearch()">
+            <mat-form-field>
+                <mat-label>Título del juego</mat-label>
+                <input
+                    type="text"
+                    matInput
+                    placeholder="Título..."
+                    [(ngModel)]="filterGameTitle"
+                    name="title"
+                />
+            </mat-form-field>
+        </form>
+        <form (keydown.enter)="onSearch()">
+            <mat-form-field>
+                <mat-label>Nombre del cliente</mat-label>
+                <input
+                    type="text"
+                    matInput
+                    placeholder="Cliente..."
+                    [(ngModel)]="filterClientName"
+                    name="name"
+                />
+            </mat-form-field>
+        </form>
+
+        <form (keydown.enter)="onSearch()" class="date-fields">
+            <mat-form-field>
+                <mat-label>Fecha de préstamo</mat-label>
+                <input matInput [matDatepicker]="startDatePicker" placeholder="Fecha..." [(ngModel)]="filterDate" name="date"
+                    required>
+                <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #startDatePicker></mat-datepicker>
+                <mat-error>La fecha de inicio no puede estar vacía</mat-error>
+
+            </mat-form-field>
+        </form>
+
+        <div class="buttons">
+            <button mat-stroked-button (click)="onCleanFilter()">Limpiar</button>
+            <button mat-stroked-button (click)="onSearch()">Filtrar</button>
+        </div>
+
+    </div>
+
     <mat-table [dataSource]="dataSource"> 
         <ng-container matColumnDef="id">
             <mat-header-cell *matHeaderCellDef> Identificador </mat-header-cell>

@@ -6,17 +6,31 @@ import { Loan } from './model/Loan';
 import { HttpClient } from '@angular/common/http';
 import { StatusResponse } from '../core/model/StatusResponse';
 import { DateUtils } from '../shared/date-utils';
+import { Client } from '../client/model/Client';
+import { Game } from '../game/model/Game';
+import { GameService } from '../game/game.service';
+import { ClientService } from '../client/client.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoanService {
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private gameService: GameService,
+    private clientService: ClientService
+  ) { }
 
   private baseUrl = 'http://localhost:8080/loan';
 
-  getLoans(pageable: Pageable): Observable<LoanPage> {
+  getGameClientDateFilteredLoans(pageable: Pageable, date?: Date | null, gameTitle?: string | undefined, clientName?: string | undefined): Observable<LoanPage> {
+    const url = this.composeFindUrl(date, gameTitle, clientName);
+    const body = { pageable: pageable };
+    return this.http.post<LoanPage>(url, body);
+  }
+
+  getAllLoans(pageable: Pageable): Observable<LoanPage> {
     return this.http.post<LoanPage>(this.baseUrl, { pageable: pageable });
   }
 
@@ -28,5 +42,20 @@ export class LoanService {
 
   deleteLoan(id: number): Observable<StatusResponse> {
     return this.http.delete<StatusResponse>(`${this.baseUrl}/${id}`);
+  }
+
+  private composeFindUrl(date?: Date | null, gameTitle?: string, clientName?: string): string {
+    const params = new URLSearchParams();
+    if (date) {
+      params.set('date', DateUtils.formatDate(date));
+    }
+    if (gameTitle) {
+      params.set('gameTitle', gameTitle);
+    }
+    if (clientName) {
+      params.set('clientName', clientName);
+    }
+    const queryString = params.toString();
+    return queryString ? `${this.baseUrl}?${queryString}` : this.baseUrl;
   }
 }

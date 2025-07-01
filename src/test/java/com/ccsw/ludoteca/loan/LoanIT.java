@@ -26,7 +26,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -167,7 +168,7 @@ public class LoanIT {
         LoanDto dto = new LoanDto();
         dto.setId(EXISTENT_LOAN_ID);
         dto.setClient(clientService.get(EXISTENT_CLIENT_ID));
-        dto.setGame(gameService.find(EXISTENT_GAME_TITLE, EXISTENT_GAME_CATEGORY_ID).getFirst());
+        dto.setGame(gameService.find(EXISTENT_GAME_TITLE, EXISTENT_GAME_CATEGORY_ID).get(0));
         dto.setStartDate(NEW_START_DATE.plusDays(new Random().nextInt(5) + 1));
         dto.setEndDate(NEW_END_DATE.plusDays(new Random().nextInt(5) + 1));
 
@@ -189,7 +190,7 @@ public class LoanIT {
         LoanDto dto = new LoanDto();
         dto.setId(NON_EXISTENT_LOAN_ID);
         dto.setClient(clientService.get(EXISTENT_CLIENT_ID));
-        dto.setGame(gameService.find(EXISTENT_GAME_TITLE, EXISTENT_GAME_CATEGORY_ID).getFirst());
+        dto.setGame(gameService.find(EXISTENT_GAME_TITLE, EXISTENT_GAME_CATEGORY_ID).get(0));
         dto.setStartDate(NEW_START_DATE);
         dto.setEndDate(NEW_END_DATE);
 

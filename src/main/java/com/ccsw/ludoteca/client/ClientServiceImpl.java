@@ -62,7 +62,7 @@ public class ClientServiceImpl implements ClientService {
         Specification<Client> nameSpec = new ClientSpecification(new SearchCriteria("name", ":", dto.getName()));
         List<Client> listaClientes = clientRepository.findAll(nameSpec.and(nameSpec));
         if (!listaClientes.isEmpty()) {
-            if (listaClientes.getFirst().getId().equals(dto.getId())) {
+            if (listaClientes.get(0).getId().equals(dto.getId())) {
                 return new StatusResponse(StatusResponse.OK_REQUEST_MSG, EDIT_SUCCESSFUL_EXT_MSG);
             }
             return new StatusResponse(ClientException.NAME_ALREADY_EXISTS, ClientException.NAME_ALREADY_EXISTS_EXTENDED);

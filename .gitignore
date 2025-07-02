@@ -26,7 +26,8 @@ frontend/.vscode/*
 frontend/.history/*
 frontend/.angular*
 
-#frontend/*.iml
+frontend/*.iml
+backend/*.iml
 
 # Miscellaneous
 /.angular/cache

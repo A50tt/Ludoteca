@@ -4,5 +4,5 @@ import { Loan } from "./Loan";
 export class LoanPage {
     content!: Loan[];
     pageable!: Pageable;
-    totalElements!: number;
+    totalElements!: number
 }

@@ -2,6 +2,28 @@
     <h1>Listado de Préstamos</h1>
 
     <div class="filters">
+
+        <form>
+            <mat-form-field>
+                <mat-label>Nombre del juego</mat-label>
+                <mat-select disableRipple [(ngModel)]="filterGame" name="game">
+                    @for (game of games; track game.id) {
+                        <mat-option [value]="game">{{ game.title }}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>Nombre del cliente</mat-label>
+                <mat-select disableRipple [(ngModel)]="filterClient" name="client">
+                    @for (client of clients; track client.id) {
+                        <mat-option [value]="client">{{ client.name }}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+        </form>
+
+        <!--
         <form (keydown.enter)="onSearch()">
             <mat-form-field>
                 <mat-label>Título del juego</mat-label>
@@ -9,7 +31,7 @@
                     type="text"
                     matInput
                     placeholder="Título..."
-                    [(ngModel)]="filterGameTitle"
+                    [(ngModel)]="filterClientName"
                     name="title"
                 />
             </mat-form-field>
@@ -26,6 +48,7 @@
                 />
             </mat-form-field>
         </form>
+        -->
 
         <form (keydown.enter)="onSearch()" class="date-fields">
             <mat-form-field>
@@ -85,7 +108,7 @@
         <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table> 
 
-    <mat-paginator (page)="loadPage($event)" [pageSizeOptions]="[5, 10, 20]" [pageIndex]="pageNumber" [pageSize]="pageSize" [length]="totalElements" showFirstLastButtons></mat-paginator>
+    <mat-paginator (page)="loadPage($event)" [pageSizeOptions]="[5, 10, 20]" [pageIndex]="pageable.pageNumber" [pageSize]="pageable.pageSize" [length]="loanPage.totalElements" showFirstLastButtons></mat-paginator>
 
     <div class="buttons">
         <button mat-flat-button color="primary" (click)="createLoan()">Nuevo préstamo</button> 

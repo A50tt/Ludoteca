@@ -24,7 +24,7 @@ export class LoanService {
 
   private baseUrl = 'http://localhost:8080/loan';
 
-  getGameClientDateFilteredLoans(pageable: Pageable, date?: Date | null, gameTitle?: string | undefined, clientName?: string | undefined): Observable<LoanPage> {
+  getGameClientDateFilteredLoans(pageable: Pageable, date: Date | null, gameTitle: string | null, clientName: string | null): Observable<LoanPage> {
     const url = this.composeFindUrl(date, gameTitle, clientName);
     const body = { pageable: pageable };
     return this.http.post<LoanPage>(url, body);
@@ -44,7 +44,7 @@ export class LoanService {
     return this.http.delete<StatusResponse>(`${this.baseUrl}/${id}`);
   }
 
-  private composeFindUrl(date?: Date | null, gameTitle?: string, clientName?: string): string {
+  private composeFindUrl(date: Date | null, gameTitle: string | null, clientName: string | null): string {
     const params = new URLSearchParams();
     if (date) {
       params.set('date', DateUtils.formatDate(date));

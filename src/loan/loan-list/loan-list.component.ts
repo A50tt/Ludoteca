@@ -55,23 +55,20 @@ import { firstValueFrom } from 'rxjs';
   ]
 })
 export class LoanListComponent {
-  pageNumber: number = 0;
-  pageSize: number = 5;
-  totalElements: number = 0;
-
   dataSource = new MatTableDataSource<Loan>();
   displayedColumns: string[] = ['id', 'game', 'client', 'startDate', 'endDate', 'action'];
+  totalElements: number = 0;
 
   loans!: Loan[];
   games!: Game[];
   clients!: Client[];
-  filterGameTitle!: string | null;
+  filterGameTitle!: string | null; // TODO
   filterClientName!: string | null;
   filterDate!: Date | null;
 
   pageable: Pageable = {
-    pageNumber: this.pageNumber,
-    pageSize: this.pageSize,
+    pageNumber: 0,
+    pageSize: 5,
     sort: [
       {
         property: 'id',
@@ -94,6 +91,9 @@ export class LoanListComponent {
   }
 
   loadPage(event?: PageEvent) {
+    this.gameService.getGames().subscribe((games) => (this.games = games));
+    this.clientService.getClients().subscribe((clients) => (this.clients = clients));
+
     if (event != null) {
       this.pageable.pageSize = event.pageSize;
       this.pageable.pageNumber = event.pageIndex;
@@ -102,8 +102,8 @@ export class LoanListComponent {
     if (this.filterGameTitle == null && this.filterClientName == null && this.filterDate == null) {
       this.loanService.getAllLoans(this.pageable).subscribe((data) => {
         this.dataSource.data = data.content;
-        this.pageNumber = data.pageable.pageNumber;
-        this.pageSize = data.pageable.pageSize;
+        this.pageable.pageNumber = data.pageable.pageNumber;
+        this.pageable.pageSize = data.pageable.pageSize;
         this.totalElements = data.totalElements;
       });
     } else {
@@ -146,18 +146,17 @@ export class LoanListComponent {
   }
 
   async onSearch(): Promise<void> {
-    const gameTitle = this.filterGameTitle != null ? this.filterGameTitle : undefined;;
-    const clientName = this.filterClientName != null ? this.filterClientName : undefined;
-    const date = this.filterDate != null ? this.filterDate : undefined;
+    this.filterGameTitle != null ? this.filterGameTitle : null;
+    this.filterClientName != null ? this.filterClientName : null;
+    this.filterDate != null ? this.filterDate : null;
 
-    const loansPage = await firstValueFrom(this.loanService.getGameClientDateFilteredLoans(this.pageable, this.filterDate, gameTitle, clientName));
-    this.loans = loansPage.content;
+    const loansPage = await firstValueFrom(this.loanService.getGameClientDateFilteredLoans(this.pageable, this.filterDate, this.filterGameTitle, this.filterClientName));
 
     console.log("------- NEXT -------");
     this.dataSource.data = loansPage.content;
-    this.pageNumber = this.pageable.pageNumber;
-    this.pageSize = this.pageable.pageSize;
-    this.totalElements = loansPage.totalElements
+    this.pageable.pageNumber = this.pageable.pageNumber;
+    this.pageable.pageSize = this.pageable.pageSize;
+    this.totalElements = loansPage.totalElements;
   }
 
   onCleanFilter(): void {

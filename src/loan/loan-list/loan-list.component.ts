@@ -62,9 +62,9 @@ export class LoanListComponent {
   loans!: Loan[];
   games!: Game[];
   clients!: Client[];
-  filterGameTitle!: string | null; // TODO
-  filterClientName!: string | null;
-  filterDate!: Date | null;
+  gameFilter!: Game | null; // TODO
+  clientFilter!: Client | null;
+  dateFilter!: Date | null;
 
   pageable: Pageable = {
     pageNumber: 0,
@@ -99,7 +99,7 @@ export class LoanListComponent {
       this.pageable.pageNumber = event.pageIndex;
     }
 
-    if (this.filterGameTitle == null && this.filterClientName == null && this.filterDate == null) {
+    if (this.gameFilter == null && this.clientFilter == null && this.dateFilter == null) {
       this.loanService.getAllLoans(this.pageable).subscribe((data) => {
         this.dataSource.data = data.content;
         this.pageable.pageNumber = data.pageable.pageNumber;
@@ -146,13 +146,12 @@ export class LoanListComponent {
   }
 
   async onSearch(): Promise<void> {
-    this.filterGameTitle != null ? this.filterGameTitle : null;
-    this.filterClientName != null ? this.filterClientName : null;
-    this.filterDate != null ? this.filterDate : null;
+    this.gameFilter != null ? this.gameFilter : null;
+    this.clientFilter != null ? this.clientFilter : null;
+    this.dateFilter != null ? this.dateFilter : null;
 
-    const loansPage = await firstValueFrom(this.loanService.getGameClientDateFilteredLoans(this.pageable, this.filterDate, this.filterGameTitle, this.filterClientName));
+    const loansPage = await firstValueFrom(this.loanService.getGameClientDateFilteredLoans(this.pageable, this.dateFilter, this.gameFilter, this.clientFilter));
 
-    console.log("------- NEXT -------");
     this.dataSource.data = loansPage.content;
     this.pageable.pageNumber = this.pageable.pageNumber;
     this.pageable.pageSize = this.pageable.pageSize;
@@ -160,9 +159,9 @@ export class LoanListComponent {
   }
 
   onCleanFilter(): void {
-    this.filterGameTitle = '';
-    this.filterClientName = null;
-    this.filterDate = null;
+    this.gameFilter = null;
+    this.clientFilter = null;
+    this.dateFilter = null;
     this.onSearch();
   }
 }

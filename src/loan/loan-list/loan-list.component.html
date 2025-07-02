@@ -6,7 +6,7 @@
         <form>
             <mat-form-field>
                 <mat-label>Nombre del juego</mat-label>
-                <mat-select disableRipple [(ngModel)]="filterGame" name="game">
+                <mat-select disableRipple (selectionChange)="onSearch()" [(ngModel)]="gameFilter" name="game">
                     @for (game of games; track game.id) {
                         <mat-option [value]="game">{{ game.title }}</mat-option>
                     }
@@ -15,7 +15,7 @@
 
             <mat-form-field>
                 <mat-label>Nombre del cliente</mat-label>
-                <mat-select disableRipple [(ngModel)]="filterClient" name="client">
+                <mat-select disableRipple (selectionChange)="onSearch()" [(ngModel)]="clientFilter" name="client">
                     @for (client of clients; track client.id) {
                         <mat-option [value]="client">{{ client.name }}</mat-option>
                     }
@@ -23,37 +23,10 @@
             </mat-form-field>
         </form>
 
-        <!--
-        <form (keydown.enter)="onSearch()">
-            <mat-form-field>
-                <mat-label>Título del juego</mat-label>
-                <input
-                    type="text"
-                    matInput
-                    placeholder="Título..."
-                    [(ngModel)]="filterClientName"
-                    name="title"
-                />
-            </mat-form-field>
-        </form>
-        <form (keydown.enter)="onSearch()">
-            <mat-form-field>
-                <mat-label>Nombre del cliente</mat-label>
-                <input
-                    type="text"
-                    matInput
-                    placeholder="Cliente..."
-                    [(ngModel)]="filterClientName"
-                    name="name"
-                />
-            </mat-form-field>
-        </form>
-        -->
-
         <form (keydown.enter)="onSearch()" class="date-fields">
             <mat-form-field>
                 <mat-label>Fecha de préstamo</mat-label>
-                <input matInput [matDatepicker]="startDatePicker" placeholder="Fecha..." [(ngModel)]="filterDate" name="date"
+                <input matInput (selectionChange)="onSearch()" [matDatepicker]="startDatePicker" placeholder="Fecha..." [(ngModel)]="dateFilter" name="date"
                     required>
                 <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
                 <mat-datepicker #startDatePicker></mat-datepicker>
@@ -108,7 +81,7 @@
         <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table> 
 
-    <mat-paginator (page)="loadPage($event)" [pageSizeOptions]="[5, 10, 20]" [pageIndex]="pageable.pageNumber" [pageSize]="pageable.pageSize" [length]="loanPage.totalElements" showFirstLastButtons></mat-paginator>
+    <mat-paginator (page)="loadPage($event)" [pageSizeOptions]="[5, 10, 20]" [pageIndex]="pageable.pageNumber" [pageSize]="pageable.pageSize" [length]="totalElements" showFirstLastButtons></mat-paginator>
 
     <div class="buttons">
         <button mat-flat-button color="primary" (click)="createLoan()">Nuevo préstamo</button> 

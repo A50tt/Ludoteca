@@ -42,7 +42,7 @@ export class GameListComponent implements OnInit {
         private gameService: GameService,
         private categoryService: CategoryService,
         public dialog: MatDialog
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         this.gameService.getGames().subscribe((games) => (this.games = games));
@@ -87,8 +87,8 @@ export class GameListComponent implements OnInit {
             this.onSearch();
         });
     }
-    
+
     getGameId(index: number, game: any): number {
-      return game.id;
-  }
+        return game.id;
+    }
 }

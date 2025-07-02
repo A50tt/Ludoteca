@@ -42,7 +42,6 @@ export class CategoryListComponent implements OnInit {
         this.categoryService.getCategories().subscribe(
             (categories) => {
                 this.dataSource.data = categories;
-                console.log(this.dataSource.data.toString());
             }
         );
     }

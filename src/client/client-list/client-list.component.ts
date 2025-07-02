@@ -59,7 +59,6 @@ export class ClientListComponent {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result)
       this.ngOnInit();
     });
   }

@@ -41,7 +41,6 @@ export class CategoryEditComponent implements OnInit {
         this.dialogRef.close();
       },
       error: (err) => {
-        console.log(err);
         this.errDialogService.openMsgErrorDialog(err.error.message, err.error.extendedMessage);
       }
     });

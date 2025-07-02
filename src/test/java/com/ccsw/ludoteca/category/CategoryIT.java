@@ -78,7 +78,6 @@ public class CategoryIT {
         ResponseEntity<List<CategoryDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.GET, null, responseType);
         assertNotNull(response);
         assertEquals(3, response.getBody().size());
-        //response.getBody().forEach((e) -> System.out.println(e.getId() + " / " + e.getName()));
 
         CategoryDto categorySearch = response.getBody().stream().filter(item -> item.getId().equals(MODIFY_CATEGORY_ID)).findFirst().orElse(null);
         assertNotNull(categorySearch);

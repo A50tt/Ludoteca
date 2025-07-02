@@ -124,7 +124,6 @@ public class LoanServiceImpl implements LoanService {
     private String validate(LoanDto loanDto) {
         // DATE VALIDATIONS
         // Si 'endDate' es menor que 'startDate' => ERROR
-        System.out.println(loanDto.getEndDate().compareTo(loanDto.getStartDate()));
         if (loanDto.getEndDate().isBefore(loanDto.getStartDate())) {
             return LoanException.INVALID_END_DATE;
         }

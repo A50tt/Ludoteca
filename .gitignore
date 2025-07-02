@@ -1,2 +1,6 @@
 .idea*
 target*
+.mvn*
+mvn*
+HELP.md
+.gitattributes

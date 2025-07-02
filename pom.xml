@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.ccsw</groupId>
-    <artifactId>tutorial</artifactId>
+    <artifactId>Ludoteca</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>tutorial</name>
     <description>Tutorial project for Spring Boot</description>
@@ -39,9 +39,11 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+            <version>2.3.232</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>

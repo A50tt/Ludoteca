@@ -1,11 +1,4 @@
-<<<<<<< HEAD
-.idea*
-target*
-.mvn*
-mvn*
-HELP.md
-.gitattributes
-=======
+
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
 # Compiled output
@@ -15,22 +8,25 @@ HELP.md
 /bazel-out
 
 # Node
-/node_modules
-npm-debug.log
-yarn-error.log
+frontend/node_modules
+frontend/npm-debug.log
+frontend/yarn-error.log
 
 # IDEs and editors
-.idea/
-.project
-.classpath
-.c9/
+backend/.idea/
+backend/.project
+backend/.classpath
+backend/.c9/
 *.launch
-.settings/
+backend/.settings/
 *.sublime-workspace
 
 # Visual Studio Code
-.vscode/*
-.history/*
+frontend/.vscode/*
+frontend/.history/*
+frontend/.angular*
+
+#frontend/*.iml
 
 # Miscellaneous
 /.angular/cache
@@ -44,4 +40,11 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
->>>>>>> angular-repo/main
+
+#IntelliJ
+backend/.idea*
+backend/target*
+backend/.mvn*
+backend/mvn*
+backend/HELP.md
+backend/.gitattributes

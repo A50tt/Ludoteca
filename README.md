@@ -1,4 +1,4 @@
-Para comenzar este proyecto, he seguido un tutorial creado por las siguientes personas.
+Para comenzar este proyecto, he seguido un curso en el que han participado las siguientes personas.
 
 ````
 - Felipe Garcia (@fgarciafer)

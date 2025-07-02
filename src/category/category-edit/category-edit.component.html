@@ -1,13 +1,11 @@
 <div class="container">
-    <h1>Crear categoría</h1>
-
     @if (category.id) {
     <h1>Modificar categoría</h1>
     } @else {
     <h1>Crear categoría</h1>
     }
 
-    <form>
+    <form (keydown.enter)="onSave()">
         <mat-form-field>
             <mat-label>Identificador</mat-label>
             <input type="text" matInput placeholder="Identificador" [(ngModel)]="category.id" name="id" disabled>

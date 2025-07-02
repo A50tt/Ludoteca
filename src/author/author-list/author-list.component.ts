@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { AuthorEditComponent } from '../author-edit/author-edit.component';
@@ -10,13 +10,17 @@ import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dial
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
+import { AlertService } from '../../core/alerts';
+import { DialogMessageService } from '../../core/dialog-message/dialog-message-service';
 
 @Component({
     selector: 'app-author-list',
     standalone: true,
-    imports: [MatButtonModule, MatIconModule, MatTableModule, CommonModule, MatPaginatorModule],
+    imports: [MatButtonModule, MatIconModule, MatTableModule, CommonModule, MatPaginatorModule, MatDialogModule],
     templateUrl: './author-list.component.html',
     styleUrl: './author-list.component.scss',
+    providers: []
 })
 export class AuthorListComponent implements OnInit {
     pageNumber: number = 0;
@@ -26,7 +30,12 @@ export class AuthorListComponent implements OnInit {
     dataSource = new MatTableDataSource<Author>();
     displayedColumns: string[] = ['id', 'name', 'nationality', 'action'];
 
-    constructor(private authorService: AuthorService, public dialog: MatDialog) {}
+    constructor(
+        private authorService: AuthorService,
+        private dialog: MatDialog,
+        private alertService: AlertService,
+        private errDialogService: DialogMessageService
+    ) { }
 
     ngOnInit(): void {
         this.loadPage();
@@ -45,9 +54,7 @@ export class AuthorListComponent implements OnInit {
         };
 
         if (event != null) {
-            console.log(event.pageSize);
             pageable.pageSize = event.pageSize;
-            console.log(event.pageIndex);
             pageable.pageNumber = event.pageIndex;
         }
 
@@ -84,14 +91,21 @@ export class AuthorListComponent implements OnInit {
             data: {
                 title: 'Eliminar autor',
                 description:
-                    'Atención si borra el autor se perderán sus datos.<br> ¿Desea eliminar el autor?',
+                    'Atención, si borra el autor se perderán sus datos.<br> ¿Desea eliminar el autor?',
             },
         });
 
         dialogRef.afterClosed().subscribe((result) => {
             if (result) {
-                this.authorService.deleteAuthor(author.id).subscribe((result) => {
-                    this.ngOnInit();
+                this.authorService.deleteAuthor(author.id).subscribe({
+                    next: (result) => {
+                        this.alertService.success(result.extendedMessage);
+                        this.ngOnInit();
+                    },
+                    error: (err) => {
+                        this.errDialogService.openMsgErrorDialog(err.error.message, err.error.extendedMessage);
+                        this.ngOnInit();
+                    }
                 });
             }
         });

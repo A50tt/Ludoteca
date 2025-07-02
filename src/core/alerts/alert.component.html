@@ -1,0 +1,5 @@
+﻿<div class="alert-container">
+    <div *ngFor="let alert of alerts" [ngClass]="cssClass(alert)" (click)="removeAlert(alert)">
+        {{ alert.message }}
+    </div>
+</div>

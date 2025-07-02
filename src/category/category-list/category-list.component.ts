@@ -6,9 +6,12 @@ import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { CategoryService } from '../category.service';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CategoryEditComponent } from '../category-edit/category-edit.component';
 import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dialog-confirmation.component';
+import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
+import { AlertService } from '../../core/alerts';
+import { DialogMessageService } from '../../core/dialog-message/dialog-message-service';
 
 
 @Component({
@@ -18,7 +21,8 @@ import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dial
         MatButtonModule,
         MatIconModule,
         MatTableModule,
-        CommonModule
+        CommonModule,
+        MatDialogModule
     ],
     templateUrl: './category-list.component.html',
     styleUrl: './category-list.component.scss'
@@ -29,14 +33,15 @@ export class CategoryListComponent implements OnInit {
 
     constructor(
         private categoryService: CategoryService,
-        public dialog: MatDialog,
+        private dialog: MatDialog,
+        private alertService: AlertService,
+        private errDialogService: DialogMessageService
     ) { }
 
     ngOnInit(): void {
         this.categoryService.getCategories().subscribe(
             (categories) => {
                 this.dataSource.data = categories;
-                console.log(this.dataSource.data.toString());
             }
         );
     }
@@ -57,22 +62,28 @@ export class CategoryListComponent implements OnInit {
         });
 
         dialogRef.afterClosed().subscribe(result => {
-            console.log(result)
             this.ngOnInit();
         });
     }
 
-    deleteCategory(category: Category) {    
-    const dialogRef = this.dialog.open(DialogConfirmationComponent, {
-      data: { title: "Eliminar categoría", description: "Atención si borra la categoría se perderán sus datos.<br> ¿Desea eliminar la categoría?" }
-    });
+    deleteCategory(category: Category) {
+        const dialogRef = this.dialog.open(DialogConfirmationComponent, {
+            data: { title: "Eliminar categoría", description: "Atención si borra la categoría se perderán sus datos.<br> ¿Desea eliminar la categoría?" }
+        });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.categoryService.deleteCategory(category.id).subscribe(result => {
-          this.ngOnInit();
-        }); 
-      }
-    });
-  }  
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.categoryService.deleteCategory(category.id).subscribe({
+                    next: (result) => {
+                        this.alertService.success(result.extendedMessage);
+                        this.ngOnInit();
+                    },
+                    error: (err) => {
+                        this.errDialogService.openMsgErrorDialog(err.error.message, err.error.extendedMessage);
+                        this.ngOnInit();
+                    }
+                });
+            }
+        });
+    }
 }

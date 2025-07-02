@@ -42,7 +42,7 @@ export class GameListComponent implements OnInit {
         private gameService: GameService,
         private categoryService: CategoryService,
         public dialog: MatDialog
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         this.gameService.getGames().subscribe((games) => (this.games = games));
@@ -53,7 +53,7 @@ export class GameListComponent implements OnInit {
     }
 
     onCleanFilter(): void {
-        this.filterTitle = ''; //Debería ser null
+        this.filterTitle = '';
         this.filterCategory = null;
         this.onSearch();
     }
@@ -61,7 +61,7 @@ export class GameListComponent implements OnInit {
     onSearch(): void {
         const title = this.filterTitle;
         const categoryId =
-            this.filterCategory != null ? this.filterCategory.id : undefined; //en vez de undefined era null
+            this.filterCategory != null ? this.filterCategory.id : undefined;
 
         this.gameService
             .getGames(title, categoryId)
@@ -87,8 +87,8 @@ export class GameListComponent implements OnInit {
             this.onSearch();
         });
     }
-    
+
     getGameId(index: number, game: any): number {
-      return game.id;
-  }
+        return game.id;
+    }
 }

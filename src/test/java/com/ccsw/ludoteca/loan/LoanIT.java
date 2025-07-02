@@ -50,6 +50,8 @@ public class LoanIT {
     private static final Long NON_EXISTENT_CLIENT_ID = 99L;
     private static final Long NON_EXISTENT_GAME_ID = 99L;
 
+    private static final int TOTAL_RESULTADOS_GAME_FILTER = 3;
+
     public static final String LOCALHOST = "http://localhost:";
     public static final String SERVICE_PATH = "/loan";
 
@@ -123,6 +125,108 @@ public class LoanIT {
         assertNotNull(response);
         assertEquals(TOTAL_LOANS, response.getBody().getTotalElements());
         assertEquals(elementsCount, response.getBody().getContent().size());
+    }
+
+    /**
+     * {@code findPageWithFilters()} debería devolver un {@code List<Loan>} de los {@code Loan} filtrados por {@code Game.getTitle()}.
+     */
+    @Test
+    public void findPageWithGameFilterShouldReturnLoans() {
+        ResponseEntity<List<LoanDto>> beforeResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.GET, null, loanListResponse);
+
+        assertNotNull(beforeResponse);
+        assertEquals(6, beforeResponse.getBody().size());
+
+        String stringToLookFor = "o";
+        List<LoanDto> stringFilteredLoanList = beforeResponse.getBody().stream().filter(loanDto -> loanDto.getGame().getTitle().toLowerCase().contains(stringToLookFor.toLowerCase())).toList();
+
+        // Game.title que contenga la cadena "o"
+        LoanSearchDto searchDto = new LoanSearchDto();
+        searchDto.setPageable(new PageableRequest(0, PAGE_SIZE));
+        searchDto.setGameTitle(stringToLookFor);
+
+        ResponseEntity<ResponsePage<LoanDto>> afterResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.POST, new HttpEntity<>(searchDto), responsePageResponse);
+
+        assertNotNull(afterResponse);
+        assertEquals(stringFilteredLoanList.size(), afterResponse.getBody().getContent().size());
+    }
+
+    /**
+     * {@code findPageWithFilters()} debería devolver un {@code List<Loan>} de los {@code Loan} filtrados por {@code Client.getName()}.
+     */
+    @Test
+    public void findPageWithClientFilterShouldReturnLoans() {
+        ResponseEntity<List<LoanDto>> beforeResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.GET, null, loanListResponse);
+
+        assertNotNull(beforeResponse);
+        assertEquals(6, beforeResponse.getBody().size());
+
+        String stringToLookFor = "2";
+        List<LoanDto> stringFilteredLoanList = beforeResponse.getBody().stream().filter(loanDto -> loanDto.getClient().getName().toLowerCase().contains(stringToLookFor.toLowerCase())).toList();
+
+        // Game.title que contenga la cadena "o"
+        LoanSearchDto searchDto = new LoanSearchDto();
+        searchDto.setPageable(new PageableRequest(0, PAGE_SIZE));
+        searchDto.setClientName(stringToLookFor);
+
+        ResponseEntity<ResponsePage<LoanDto>> afterResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.POST, new HttpEntity<>(searchDto), responsePageResponse);
+
+        assertNotNull(afterResponse);
+        assertEquals(stringFilteredLoanList.size(), afterResponse.getBody().getContent().size());
+    }
+
+    /**
+     * {@code findPageWithFilters()} debería devolver un {@code List<Loan>} de los {@code Loan} filtrados por {@code LocalDate}.
+     */
+    @Test
+    public void findPageWithDateFilterShouldReturnLoans() {
+        ResponseEntity<List<LoanDto>> beforeResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.GET, null, loanListResponse);
+
+        assertNotNull(beforeResponse);
+        assertEquals(6, beforeResponse.getBody().size());
+
+        LocalDate dateToLookFor = LocalDate.of(2025, 6, 15);
+        List<LoanDto> dateFilteredLoanList = beforeResponse.getBody().stream().filter(loanDto -> !loanDto.getStartDate().isAfter(dateToLookFor) && !loanDto.getEndDate().isBefore(dateToLookFor)).toList();
+
+        // Game.title que contenga la cadena "o"
+        LoanSearchDto searchDto = new LoanSearchDto();
+        searchDto.setPageable(new PageableRequest(0, PAGE_SIZE));
+        searchDto.setDate(dateToLookFor);
+
+        ResponseEntity<ResponsePage<LoanDto>> afterResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.POST, new HttpEntity<>(searchDto), responsePageResponse);
+
+        assertNotNull(afterResponse);
+        assertEquals(dateFilteredLoanList.size(), afterResponse.getBody().getContent().size());
+    }
+
+    /**
+     * {@code findPageWithFilters()} debería devolver un {@code List<Loan>} de los {@code Loan} filtrados por {@code LocalDate}.
+     */
+    @Test
+    public void findPageWithGameAndClientAndDateFilterShouldReturnLoans() {
+        ResponseEntity<List<LoanDto>> beforeResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.GET, null, loanListResponse);
+
+        assertNotNull(beforeResponse);
+        assertEquals(6, beforeResponse.getBody().size());
+
+        String gameTitleToLookFor = "Los";
+        String clientNameToLookFor = "5";
+        LocalDate dateToLookFor = LocalDate.of(2025, 6, 15);
+        List<LoanDto> dateFilteredLoanList = beforeResponse.getBody().stream()
+                .filter(loanDto -> loanDto.getGame().getTitle().contains(gameTitleToLookFor) && loanDto.getClient().getName().contains(clientNameToLookFor) && !loanDto.getStartDate().isAfter(dateToLookFor) && !loanDto.getEndDate()
+                        .isBefore(dateToLookFor)).toList();
+
+        // Game.title que contenga la cadena "o"
+        LoanSearchDto searchDto = new LoanSearchDto();
+        searchDto.setPageable(new PageableRequest(0, PAGE_SIZE));
+        searchDto.setGameTitle(gameTitleToLookFor);
+        searchDto.setClientName(clientNameToLookFor);
+        searchDto.setDate(dateToLookFor);
+
+        ResponseEntity<ResponsePage<LoanDto>> afterResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.POST, new HttpEntity<>(searchDto), responsePageResponse);
+
+        assertNotNull(afterResponse);
+        assertEquals(dateFilteredLoanList.size(), afterResponse.getBody().getContent().size());
     }
 
     /**
@@ -201,6 +305,33 @@ public class LoanIT {
     }
 
     /**
+     *  Si se crea mediante {@code save()} de un {@code Loan} con {@code startDate} y {@code endDate} que solapan a otro préstamo del mismo {@link Game}, debería devolver un {@code HttpStatus.BAD_REQUEST}.
+     */
+    @Test
+    public void saveLoanWithOverlappingDatesAndSameGameShouldReturnBadRequestError() {
+        LoanDto dto = new LoanDto();
+        dto.setId(NON_EXISTENT_LOAN_ID);
+        dto.setClient(clientService.get(EXISTENT_CLIENT_ID));
+        dto.setGame(gameService.find(EXISTENT_GAME_TITLE, EXISTENT_GAME_CATEGORY_ID).get(0));
+        dto.setStartDate(NEW_START_DATE);
+        dto.setEndDate(NEW_END_DATE);
+
+        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(dto), statusResponse);
+
+        LoanDto errorDto = new LoanDto();
+        errorDto.setId(NON_EXISTENT_LOAN_ID + 1);
+        errorDto.setClient(dto.getClient());
+        errorDto.setGame(dto.getGame());
+        errorDto.setStartDate(NEW_START_DATE.minusDays(1));
+        errorDto.setEndDate(NEW_END_DATE.plusDays(1));
+
+        ResponseEntity<StatusResponse> saveResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(errorDto), statusResponse);
+
+        assertNotNull(saveResponse);
+        assertEquals(HttpStatus.BAD_REQUEST, saveResponse.getStatusCode());
+    }
+
+    /**
      *  Si se hace {@code delete()} de un {@code Loan} con {@code id} que existe, debería devolver un {@code HttpStatus.OK} y borrarlo.
      */
     @Test
@@ -231,13 +362,5 @@ public class LoanIT {
         ResponseEntity<StatusResponse> deleteResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + NON_EXISTENT_CLIENT_ID, HttpMethod.DELETE, null, statusResponse);
         assertNotNull(deleteResponse);
         assertEquals(HttpStatus.BAD_REQUEST, deleteResponse.getStatusCode());
-    }
-
-    /**
-     *  Si se hace {@code delete()} de un {@code Loan} con {@code id} que no existe, debería devolver un {@code HttpStatus.INTERNAL_SERVER_ERROR}.
-     */
-    @Test
-    public void startLoanWithOverlappingDatesShouldReturnBadRequestError() {
-
     }
 }

@@ -20,7 +20,6 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,10 +71,14 @@ public class LoanController {
      */
     @Operation(summary = "Find Page", description = "Method that return a page of Loans")
     @RequestMapping(path = "", method = RequestMethod.POST)
-    public Page<LoanDto> findPage(@RequestBody LoanSearchDto dto, @RequestParam(value = "gameTitle", required = false) String gameTitle, @RequestParam(value = "clientName", required = false) String clientName, @RequestParam(value = "date", required = false) LocalDate existsAtDate) {
-        dto.setGameTitle(gameTitle);
-        dto.setClientName(clientName);
-        dto.setDate(existsAtDate);
+    public Page<LoanDto> findPage(@RequestBody LoanSearchDto dto, @RequestParam(value = "gameTitle", required = false) String gameTitle, @RequestParam(value = "clientName", required = false) String clientName,
+            @RequestParam(value = "date", required = false) LocalDate existsAtDate) {
+        if (gameTitle != null)
+            dto.setGameTitle(gameTitle);
+        if (clientName != null)
+            dto.setClientName(clientName);
+        if (existsAtDate != null)
+            dto.setDate(existsAtDate);
 
         Page<Loan> page = this.loanService.findPageWithFilters(dto);
 

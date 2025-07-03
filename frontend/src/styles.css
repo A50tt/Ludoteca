@@ -1,26 +1,45 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
 .alert-container {
-    height: 50px; /* Reserve space for alerts */
-    overflow: hidden; /* Prevent content overflow */
-    position: relative; /* Keep it in the flow of the page */
-    background-color: transparent; /* Optional: Add a background color */
+    height: 50px;
+    /* Reserve space for alerts */
+    overflow: hidden;
+    /* Prevent content overflow */
+    position: relative;
+    /* Keep it in the flow of the page */
+    background-color: transparent;
+    /* Optional: Add a background color */
 }
 
 .alert-container .alert {
-    position: absolute; /* Position alerts within the container */
+    position: absolute;
+    /* Position alerts within the container */
     top: 0;
     left: 0;
     right: 0;
     margin: 0 auto;
-    width: 100%; /* Ensure alerts span the container */
-    color: #000000; /* Default text color */
+    width: 100%;
+    /* Ensure alerts span the container */
+    color: #000000;
+    /* Default text color */
     text-align: center;
 }
 
 .alert-success {
-    background-color: #a8ad004d; /* Green for success */
+    background-color: #a8ad004d;
+    /* Green for success */
+}
+
+.delete-button {
+    color: orange !important;
 }

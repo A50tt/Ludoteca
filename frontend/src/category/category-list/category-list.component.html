@@ -18,7 +18,7 @@
                 <button mat-icon-button color="primary" (click)="editCategory(element)">
                     <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button color="accent" (click)="deleteCategory(element)">
+                <button mat-icon-button color="basic" class="delete-button" (click)="deleteCategory(element)">
                     <mat-icon>clear</mat-icon>
                 </button>
             </mat-cell>
@@ -28,7 +28,7 @@
         <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
 
-    <div class="buttons">
+    <div class="create-loan-button">
         <button mat-flat-button color="primary" (click)="createCategory()">Nueva categoría</button>
     </div>
 </div>

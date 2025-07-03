@@ -34,7 +34,6 @@
 
         <div class="buttons">
             <button mat-stroked-button (click)="onCleanFilter()">Limpiar</button>
-            <button mat-stroked-button (click)="onSearch()">Filtrar</button>
         </div>
 
     </div>
@@ -68,7 +67,7 @@
         <ng-container matColumnDef="action">
             <mat-header-cell *matHeaderCellDef></mat-header-cell>
             <mat-cell *matCellDef="let element">
-                <button mat-icon-button color="accent" (click)="deleteLoan(element)">
+                <button mat-icon-button color="primary" class="delete-button" (click)="deleteLoan(element)">
                     <mat-icon>clear</mat-icon>
                 </button>
             </mat-cell>
@@ -76,7 +75,7 @@
 
         <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-    </mat-table> 
+    </mat-table>
 
     <mat-paginator (page)="loadPage($event)" [pageSizeOptions]="[5, 10, 20]" [pageIndex]="pageable.pageNumber" [pageSize]="pageable.pageSize" [length]="totalElements" showFirstLastButtons></mat-paginator>
 

@@ -24,6 +24,7 @@ import { AlertService } from '../../core/alerts';
 import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
 import { DialogMessageService } from '../../core/dialog-message/dialog-message-service';
+import { DateUtils } from '../../shared/date-utils';
 
 
 @Component({
@@ -53,6 +54,9 @@ import { DialogMessageService } from '../../core/dialog-message/dialog-message-s
 })
 
 export class LoanEditComponent implements OnInit {
+  static readonly MAX_DAYS_OF_LOAN = 14;
+  dateMaxLengthError = false;
+
   loan!: Loan;
   registeredClients!: Observable<Client[]>
   registeredGames!: Observable<Game[]>
@@ -90,18 +94,66 @@ export class LoanEditComponent implements OnInit {
       endDateInput?.blur();
     } else {
       this.loanService.saveLoan(this.loan).subscribe({
-      next: (result) => {
-        this.alertService.success(result.extendedMessage);
-        this.dialogRef.close();
-      },
-      error: (err) => {
-        this.errDialogService.openMsgErrorDialog(err.error.message, err.error.extendedMessage);
-      }
-    });
+        next: (result) => {
+          this.alertService.success(result.extendedMessage);
+          this.dialogRef.close();
+        },
+        error: (err) => {
+          this.errDialogService.openMsgErrorDialog(err.error.message, err.error.extendedMessage);
+        }
+      });
     }
   }
 
   onClose() {
     this.dialogRef.close();
+  }
+
+  onStartDateSet() {
+    // Se ha borrado startDate o endDate después de error? Desactiva error.
+    if (!this.loan.startDate || !this.loan.endDate) {
+      this.dateMaxLengthError = false;
+      return;
+    }
+    
+    // startDate mayor que endDate? Aumenta endDate a startDate.
+    const startDate = (this.loan.startDate as any)?.toDate ? (this.loan.startDate as any).toDate() : new Date(this.loan.startDate);
+    const endDate = (this.loan.endDate as any)?.toDate ? (this.loan.endDate as any).toDate() : new Date(this.loan.endDate);
+    if (startDate > endDate) {
+      this.loan.endDate = this.loan.startDate;
+      this.dateMaxLengthError = false;
+    } else {
+
+      // Más de 14 días de préstamo?
+      const daysDifference = DateUtils.getDaysDifference(this.loan.startDate, this.loan.endDate);
+      if (daysDifference > LoanEditComponent.MAX_DAYS_OF_LOAN) {
+        this.dateMaxLengthError = true;
+      } else {
+        this.dateMaxLengthError = false;
+      }
+    }
+  }
+
+  onEndDateSet() {
+    // Se ha borrado startDate o endDate después de error? Desactiva error.
+    if (!this.loan.startDate || !this.loan.endDate) {
+      this.dateMaxLengthError = false;
+      return;
+    }
+
+    // startDate mayor que endDate? Reduce startDate a endDate.
+    if (this.loan.startDate > this.loan.endDate) {
+      this.loan.startDate = this.loan.endDate;
+      this.dateMaxLengthError = false;
+      return;
+    }
+    
+    // Más de 14 días de préstamo?
+    const daysDifference = DateUtils.getDaysDifference(this.loan.startDate, this.loan.endDate);
+    if (daysDifference > LoanEditComponent.MAX_DAYS_OF_LOAN) {
+      this.dateMaxLengthError = true;
+    } else {
+      this.dateMaxLengthError = false;
+    }
   }
 }

@@ -23,7 +23,7 @@
             </mat-form-field>
         </form>
 
-        <form (keydown.enter)="onSearch()" class="date-fields">
+        <form class="date-fields">
             <mat-form-field>
                 <mat-label>Fecha de préstamo</mat-label>
                 <input matInput (dateChange)="onSearch()" [matDatepicker]="startDatePicker" placeholder="Fecha..." [(ngModel)]="dateFilter" name="date">

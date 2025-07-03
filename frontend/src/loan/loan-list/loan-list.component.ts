@@ -1,7 +1,7 @@
 import { Loan } from '../model/Loan';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
+import { PageEvent, MatPaginatorModule, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,6 +27,7 @@ import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/mat
 import { MY_DP_FORMAT } from '../loan-edit/date-picker/date-picker';
 import { LoanPage } from '../model/LoanPage';
 import { firstValueFrom } from 'rxjs';
+import { MatPaginatorIntlEsp } from '../../core/paginator/CustomPaginator';
 
 @Component({
   selector: 'app-loan-list',
@@ -52,6 +53,7 @@ import { firstValueFrom } from 'rxjs';
     { provide: MAT_DATE_FORMATS, useValue: MY_DP_FORMAT },
     { provide: MY_DP_FORMAT, useValue: 'es-ES' }, // Spanish locale
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS] },
+    { provide: MatPaginatorIntl, useClass: MatPaginatorIntlEsp}
   ]
 })
 export class LoanListComponent {

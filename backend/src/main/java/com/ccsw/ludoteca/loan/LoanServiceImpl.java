@@ -9,20 +9,18 @@ import com.ccsw.ludoteca.loan.model.LoanSearchDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Service
 public class LoanServiceImpl implements LoanService {
 
     private final Long MAX_LEND_DAYS = 14L;
+
     private final String VALIDATED_REQUEST = "Request validada.";
+    private final int MAX_GAMES_PER_CLIENT = 2;
     private final String SAVED_SUCCESSFUL_EXTENDED_MSG = "Préstamo guardado.";
     private final String DELETE_SUCCESSFUL_EXTENDED_MSG = "Préstamo borrado.";
 
@@ -53,22 +51,16 @@ public class LoanServiceImpl implements LoanService {
 
         // Agregar las 'Specifications' según si se han especificado o no.
         if (dto.getDate() != null) {
-            spec = spec.and(new LoanSpecification(
-                    new SearchCriteria("startDate", "<=", dto.getDate())));
-            spec = spec.and(new LoanSpecification(
-                    new SearchCriteria("endDate", ">=", dto.getDate())));
+            spec = spec.and(new LoanSpecification(new SearchCriteria("startDate", "<=", dto.getDate())));
+            spec = spec.and(new LoanSpecification(new SearchCriteria("endDate", ">=", dto.getDate())));
         }
 
         if (dto.getGameTitle() != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.like(cb.lower(root.get("game").get("title")),
-                            "%" + dto.getGameTitle().toLowerCase() + "%"));
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("game").get("title")), "%" + dto.getGameTitle().toLowerCase() + "%"));
         }
 
         if (dto.getClientName() != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.like(cb.lower(root.get("client").get("name")),
-                            "%" + dto.getClientName().toLowerCase() + "%"));
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("client").get("name")), "%" + dto.getClientName().toLowerCase() + "%"));
         }
 
         // Aplicar 'Specification' junto con al 'Pageable.
@@ -147,7 +139,7 @@ public class LoanServiceImpl implements LoanService {
 
         // El 'Client' tiene prestados más de 2 'Games' en un mismo día del período => ERROR
         List<Loan> loansSamePeriodSameClient = this.loanRepository.findAll(startDateSpec.and(endDateSpec).and(clientSpec));
-        if (loansSamePeriodSameClient.size() >= 2) {
+        if (loansSamePeriodSameClient.size() >= MAX_GAMES_PER_CLIENT) {
             return LoanException.LOAN_LIMIT_EXCEEDED;
         }
         return VALIDATED_REQUEST;

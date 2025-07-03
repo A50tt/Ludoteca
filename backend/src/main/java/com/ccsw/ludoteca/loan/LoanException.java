@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class LoanException extends Exception {
 
-    public static final String INVALID_END_DATE = "BAD_END_DATE.";
+    public static final String INVALID_END_DATE = "BAD_END_DATE";
     public static final String INVALID_END_DATE_EXTENDED = "La fecha de finalización del préstamo no puede ser anterior a la fecha de inicio.";
 
     public static final String INVALID_PERIOD = "BAD_LEND_PERIOD";

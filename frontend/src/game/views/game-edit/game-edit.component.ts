@@ -1,18 +1,18 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import { GameService } from '../game.service';
-import { Game } from '../model/Game';
-import { AuthorService } from '../../author/author.service';
-import { Author } from '../../author/model/Author';
-import { CategoryService } from '../../category/category.service';
-import { Category } from '../../category/model/Category';
+import { GameService } from '../../game.service';
+import { Game } from '../../model/Game';
+import { AuthorService } from '../../../author/author.service';
+import { Author } from '../../../author/model/Author';
+import { CategoryService } from '../../../category/category.service';
+import { Category } from '../../../category/model/Category';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { AlertService } from '../../core/alerts';
-import { DialogMessageService } from '../../core/dialog-message/dialog-message-service';
+import { AlertService } from '../../../core/alerts';
+import { DialogMessageService } from '../../../core/dialog-message/dialog-message-service';
 
 @Component({
     selector: 'app-game-edit',

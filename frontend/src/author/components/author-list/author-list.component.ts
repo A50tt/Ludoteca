@@ -2,17 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { AuthorEditComponent } from '../author-edit/author-edit.component';
-import { AuthorService } from '../author.service';
-import { Author } from '../model/Author';
-import { Pageable } from '../../core/model/page/Pageable';
-import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dialog-confirmation.component';
+import { AuthorEditComponent } from '../../views/author-edit/author-edit.component';
+import { AuthorService } from '../../author.service';
+import { Author } from '../../model/Author';
+import { Pageable } from '../../../core/model/page/Pageable';
+import { DialogConfirmationComponent } from '../../../core/dialog-confirmation/dialog-confirmation.component';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
-import { AlertService } from '../../core/alerts';
-import { DialogMessageService } from '../../core/dialog-message/dialog-message-service';
+import { AlertService } from '../../../core/alerts';
+import { DialogMessageService } from '../../../core/dialog-message/dialog-message-service';
 
 @Component({
     selector: 'app-author-list',

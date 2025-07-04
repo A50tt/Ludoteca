@@ -5,6 +5,7 @@ import { Author } from './model/Author';
 import { AuthorPage } from './model/AuthorPage';
 import { HttpClient } from '@angular/common/http';
 import { StatusResponse } from '../core/model/StatusResponse';
+import { environment } from '../environments/environment';
 
 @Injectable({
     providedIn: 'root',
@@ -12,7 +13,7 @@ import { StatusResponse } from '../core/model/StatusResponse';
 export class AuthorService {
     constructor(private http: HttpClient) { }
 
-    private baseUrl = 'http://localhost:8080/author';
+    private baseUrl = environment.baseUrl + '/author';
 
     getAuthors(pageable: Pageable): Observable<AuthorPage> {
         return this.http.post<AuthorPage>(this.baseUrl, { pageable: pageable });

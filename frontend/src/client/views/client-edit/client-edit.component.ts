@@ -1,15 +1,15 @@
 import { Component, Inject } from '@angular/core';
-import { Client } from '../model/Client';
+import { Client } from '../../model/Client';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ClientService } from '../client.service';
+import { ClientService } from '../../client.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
-import { AlertService } from '../../core/alerts';
-import { DialogMessageService } from '../../core/dialog-message/dialog-message-service';
+import { DialogMessageComponent } from '../../../core/dialog-message/dialog-message.component';
+import { AlertService } from '../../../core/alerts';
+import { DialogMessageService } from '../../../core/dialog-message/dialog-message-service';
 
 
 @Component({

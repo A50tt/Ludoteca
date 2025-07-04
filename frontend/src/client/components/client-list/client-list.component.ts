@@ -3,14 +3,14 @@ import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { Client } from '../model/Client';
+import { Client } from '../../model/Client';
 import { MatDialog } from '@angular/material/dialog';
-import { ClientService } from '../client.service';
-import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dialog-confirmation.component';
-import { ClientEditComponent } from '../client-edit/client-edit.component';
-import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
-import { AlertService } from '../../core/alerts';
-import { DialogMessageService } from '../../core/dialog-message/dialog-message-service';
+import { ClientService } from '../../client.service';
+import { DialogConfirmationComponent } from '../../../core/dialog-confirmation/dialog-confirmation.component';
+import { ClientEditComponent } from '../../views/client-edit/client-edit.component';
+import { DialogMessageComponent } from '../../../core/dialog-message/dialog-message.component';
+import { AlertService } from '../../../core/alerts';
+import { DialogMessageService } from '../../../core/dialog-message/dialog-message-service';
 
 @Component({
   selector: 'app-client-list',

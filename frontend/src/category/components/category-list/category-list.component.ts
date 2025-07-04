@@ -1,17 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { Category } from '../model/Category';
+import { Category } from '../../model/Category';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { CategoryService } from '../category.service';
+import { CategoryService } from '../../category.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { CategoryEditComponent } from '../category-edit/category-edit.component';
-import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dialog-confirmation.component';
-import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
-import { AlertService } from '../../core/alerts';
-import { DialogMessageService } from '../../core/dialog-message/dialog-message-service';
+import { CategoryEditComponent } from '../../views/category-edit/category-edit.component';
+import { DialogConfirmationComponent } from '../../../core/dialog-confirmation/dialog-confirmation.component';
+import { AlertService } from '../../../core/alerts';
+import { DialogMessageService } from '../../../core/dialog-message/dialog-message-service';
 
 
 @Component({

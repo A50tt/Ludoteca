@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { GameEditComponent } from '../game-edit/game-edit.component';
-import { GameService } from '../game.service';
-import { Game } from '../model/Game';
-import { CategoryService } from '../../category/category.service';
-import { Category } from '../../category/model/Category';
+import { GameEditComponent } from '../../views/game-edit/game-edit.component';
+import { GameService } from '../../game.service';
+import { Game } from '../../model/Game';
+import { CategoryService } from '../../../category/category.service';
+import { Category } from '../../../category/model/Category';
 import { CommonModule, NgFor } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';

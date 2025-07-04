@@ -8,8 +8,7 @@ import { StatusResponse } from '../core/model/StatusResponse';
 import { DateUtils } from '../shared/date-utils';
 import { Client } from '../client/model/Client';
 import { Game } from '../game/model/Game';
-import { GameService } from '../game/game.service';
-import { ClientService } from '../client/client.service';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +19,7 @@ export class LoanService {
     private http: HttpClient
   ) { }
 
-  private baseUrl = 'http://localhost:8080/loan';
+  private baseUrl = environment.baseUrl + '/loan';
 
   getGameClientDateFilteredLoans(pageable: Pageable, date: Date | null, gameTitle: Game | null, clientName: Client | null): Observable<LoanPage> {
     const url = this.composeFindUrl(date, gameTitle, clientName);

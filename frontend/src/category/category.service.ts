@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { Category } from './model/Category';
 import { CATEGORY_DATA } from './model/mock-categories';
 import { StatusResponse } from '../core/model/StatusResponse';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class CategoryService {
 
   constructor(private http: HttpClient) { }
 
-  private baseUrl = 'http://localhost:8080/category';
+  private baseUrl = environment.baseUrl + '/category';
 
   getCategories(): Observable<Category[]> {
     return this.http.get<Category[]>(this.baseUrl);

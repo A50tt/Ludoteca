@@ -1,30 +1,29 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { LoanService } from '../loan.service';
-import { Loan } from '../model/Loan';
+import { MatDialogRef } from '@angular/material/dialog';
+import { LoanService } from '../../loan.service';
+import { Loan } from '../../model/Loan';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { Client } from '../../client/model/Client';
-import { Game } from '../../game/model/Game';
+import { Client } from '../../../client/model/Client';
+import { Game } from '../../../game/model/Game';
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule, NgFor } from '@angular/common';
-import { ClientService } from '../../client/client.service';
+import { ClientService } from '../../../client/client.service';
 import { Observable } from 'rxjs';
-import { GameService } from '../../game/game.service';
+import { GameService } from '../../../game/game.service';
 import { DateAdapter, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MY_DP_FORMAT } from './date-picker/date-picker';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
-import { AlertService } from '../../core/alerts';
+import { AlertService } from '../../../core/alerts';
 
 import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
-import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
-import { DialogMessageService } from '../../core/dialog-message/dialog-message-service';
-import { DateUtils } from '../../shared/date-utils';
+import { DialogMessageService } from '../../../core/dialog-message/dialog-message-service';
+import { DateUtils } from '../../../shared/date-utils';
 
 
 @Component({

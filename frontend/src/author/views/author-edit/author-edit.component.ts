@@ -1,14 +1,13 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { AuthorService } from '../author.service';
-import { Author } from '../model/Author';
+import { AuthorService } from '../../author.service';
+import { Author } from '../../model/Author';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { AlertService } from '../../core/alerts';
-import { DialogMessageComponent } from '../../core/dialog-message/dialog-message.component';
-import { DialogMessageService } from '../../core/dialog-message/dialog-message-service';
+import { AlertService } from '../../../core/alerts';
+import { DialogMessageService } from '../../../core/dialog-message/dialog-message-service';
 
 @Component({
     selector: 'app-author-edit',

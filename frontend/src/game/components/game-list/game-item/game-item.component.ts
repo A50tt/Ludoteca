@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Game } from '../../model/Game';
+import { Game } from '../../../model/Game';
 import {MatCardModule} from '@angular/material/card';
 
 @Component({

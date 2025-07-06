@@ -2,7 +2,7 @@ package com.ccsw.ludoteca.category;
 
 import com.ccsw.ludoteca.category.model.Category;
 import com.ccsw.ludoteca.category.model.CategoryDto;
-import com.ccsw.ludoteca.common.exception.CommonException;
+import com.ccsw.ludoteca.common.exception.CommonErrorResponse;
 import com.ccsw.ludoteca.dto.StatusResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
@@ -55,7 +55,7 @@ public class CategoryServiceImpl implements CategoryService {
     public StatusResponse save(Long id, CategoryDto dto) {
         // Se ha introducido un Category sin 'name'
         if (dto.getName().isEmpty()) {
-            return new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED);
+            return new StatusResponse(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
         }
 
         // Tenemos en cuenta si es edición o creación de 'Category' para devolver el mensaje correspondiente.
@@ -82,7 +82,7 @@ public class CategoryServiceImpl implements CategoryService {
             }
             return new StatusResponse(StatusResponse.OK_REQUEST_MSG, CREATION_SUCCESSFUL_EXT_MSG);
         } catch (Exception ex) {
-            return new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED);
+            return new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
         }
     }
 
@@ -100,7 +100,7 @@ public class CategoryServiceImpl implements CategoryService {
             categoryRepository.deleteById(id);
             return new StatusResponse(StatusResponse.OK_REQUEST_MSG, DELETE_SUCCESSFUL_EXT_MSG);
         } catch (Exception e) {
-            return new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED);
+            return new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
         }
     }
 }

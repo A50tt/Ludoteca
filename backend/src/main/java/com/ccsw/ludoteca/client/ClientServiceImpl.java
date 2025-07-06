@@ -3,7 +3,7 @@ package com.ccsw.ludoteca.client;
 import com.ccsw.ludoteca.client.model.Client;
 import com.ccsw.ludoteca.client.model.ClientDto;
 import com.ccsw.ludoteca.common.criteria.SearchCriteria;
-import com.ccsw.ludoteca.common.exception.CommonException;
+import com.ccsw.ludoteca.common.exception.CommonErrorResponse;
 import com.ccsw.ludoteca.dto.StatusResponse;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -56,7 +56,7 @@ public class ClientServiceImpl implements ClientService {
     public StatusResponse save(Long id, ClientDto dto) {
         // Se ha introducido un 'Client' sin 'name'
         if (dto.getName().isEmpty()) {
-            return new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED);
+            return new StatusResponse(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
         }
 
         // Tenemos en cuenta si es edición o creación de 'Client' para devolver el mensaje correspondiente.
@@ -96,7 +96,7 @@ public class ClientServiceImpl implements ClientService {
             }
             return new StatusResponse(StatusResponse.OK_REQUEST_MSG, CREATION_SUCCESSFUL_EXT_MSG);
         } catch (Exception ex) {
-            return new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED);
+            return new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
         }
     }
 
@@ -118,7 +118,7 @@ public class ClientServiceImpl implements ClientService {
             clientRepository.deleteById(id);
             return new StatusResponse(StatusResponse.OK_REQUEST_MSG, DELETE_SUCCESSFUL_EXT_MSG);
         } catch (Exception e) {
-            return new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED);
+            return new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
         }
     }
 }

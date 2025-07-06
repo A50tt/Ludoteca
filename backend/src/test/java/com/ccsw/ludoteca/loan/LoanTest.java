@@ -1,7 +1,7 @@
 package com.ccsw.ludoteca.loan;
 
 import com.ccsw.ludoteca.client.model.Client;
-import com.ccsw.ludoteca.common.exception.CommonException;
+import com.ccsw.ludoteca.common.exception.GlobalExceptionHandler;
 import com.ccsw.ludoteca.dto.StatusResponse;
 import com.ccsw.ludoteca.game.model.Game;
 import com.ccsw.ludoteca.loan.model.Loan;
@@ -113,9 +113,9 @@ public class LoanTest {
         loanDto4.setGame(mockGame);
         loanDto4.setEndDate(endDate);
 
-        assertEquals(CommonException.MISSING_REQUIRED_FIELDS, loanService.save(loanDto1).getMessage());
-        assertEquals(CommonException.MISSING_REQUIRED_FIELDS, loanService.save(loanDto2).getMessage());
-        assertEquals(CommonException.MISSING_REQUIRED_FIELDS, loanService.save(loanDto3).getMessage());
-        assertEquals(CommonException.MISSING_REQUIRED_FIELDS, loanService.save(loanDto4).getMessage());
+        assertEquals(GlobalExceptionHandler.MISSING_REQUIRED_FIELDS, loanService.save(loanDto1).getMessage());
+        assertEquals(GlobalExceptionHandler.MISSING_REQUIRED_FIELDS, loanService.save(loanDto2).getMessage());
+        assertEquals(GlobalExceptionHandler.MISSING_REQUIRED_FIELDS, loanService.save(loanDto3).getMessage());
+        assertEquals(GlobalExceptionHandler.MISSING_REQUIRED_FIELDS, loanService.save(loanDto4).getMessage());
     }
 }

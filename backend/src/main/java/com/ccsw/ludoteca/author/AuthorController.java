@@ -3,20 +3,16 @@ package com.ccsw.ludoteca.author;
 import com.ccsw.ludoteca.author.model.Author;
 import com.ccsw.ludoteca.author.model.AuthorDto;
 import com.ccsw.ludoteca.author.model.AuthorSearchDto;
-import com.ccsw.ludoteca.common.exception.CommonException;
 import com.ccsw.ludoteca.dto.StatusResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,19 +64,8 @@ public class AuthorController {
      */
     @Operation(summary = "Save or Update", description = "Method that saves or updates a Author")
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
-    public ResponseEntity<StatusResponse> save(@PathVariable(name = "id", required = false) Long id, @RequestBody AuthorDto dto) {
-        try {
-            StatusResponse response = this.authorService.save(id, dto);
-            if (response.getMessage().equals(StatusResponse.OK_REQUEST_MSG)) {
-                return ResponseEntity.status(HttpStatus.OK).body(response);
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }
-        } catch (NullPointerException | DataIntegrityViolationException ex1) { // No se ha introducido algún campo obligatorio.
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
-        } catch (Exception ex2) { // Exception catch por defecto.
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
-        }
+    public ResponseEntity<StatusResponse> save(@PathVariable(name = "id", required = false) Long id, @RequestBody AuthorDto dto) throws AuthorException, Exception {
+        return ResponseEntity.status(HttpStatus.OK).body(this.authorService.save(id, dto));
     }
 
     /**
@@ -92,19 +77,6 @@ public class AuthorController {
     @Operation(summary = "Delete", description = "Method that deletes a Author")
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<StatusResponse> delete(@PathVariable("id") Long id) throws Exception {
-        try {
-            StatusResponse response = this.authorService.delete(id);
-            if (response.getMessage().equals(StatusResponse.OK_REQUEST_MSG)) {
-                return ResponseEntity.status(HttpStatus.OK).body(response);
-            } else if (response.getMessage().equals(AuthorException.AUTHOR_ID_NOT_FOUND)) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }
-        } catch (SQLIntegrityConstraintViolationException ex1) { // NullPointerException es del service
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
-        } catch (Exception ex2) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(this.authorService.delete(id));
     }
 }

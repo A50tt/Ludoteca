@@ -1,7 +1,7 @@
 package com.ccsw.ludoteca.loan;
 
 import com.ccsw.ludoteca.common.criteria.SearchCriteria;
-import com.ccsw.ludoteca.common.exception.CommonException;
+import com.ccsw.ludoteca.common.exception.CommonErrorResponse;
 import com.ccsw.ludoteca.dto.StatusResponse;
 import com.ccsw.ludoteca.loan.model.Loan;
 import com.ccsw.ludoteca.loan.model.LoanDto;
@@ -71,7 +71,7 @@ public class LoanServiceImpl implements LoanService {
     public StatusResponse save(LoanDto dto) {
         // Se ha introducido un Loan sin 'Client', 'Game', 'startDate' o 'endDate'
         if (dto.getStartDate() == null || dto.getEndDate() == null || dto.getClient() == null || dto.getGame() == null) {
-            return new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED);
+            return new StatusResponse(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
         }
         // Debido a la cantidad de validaciones, se hacen en un método externo para tener un código más modularizable.
         switch (validate(dto)) {
@@ -82,9 +82,9 @@ public class LoanServiceImpl implements LoanService {
                 this.loanRepository.save(loan);
                 return new StatusResponse(StatusResponse.OK_REQUEST_MSG, SAVED_SUCCESSFUL_EXTENDED_MSG);
             } catch (InvalidDataAccessApiUsageException ex1) {
-                return new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED);
+                return new StatusResponse(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
             } catch (Exception ex2) {
-                return new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED);
+                return new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
             }
         case LoanException.INVALID_END_DATE:
             return new StatusResponse(LoanException.INVALID_END_DATE, LoanException.INVALID_END_DATE_EXTENDED);
@@ -95,7 +95,7 @@ public class LoanServiceImpl implements LoanService {
         case LoanException.LOAN_LIMIT_EXCEEDED:
             return new StatusResponse(LoanException.LOAN_LIMIT_EXCEEDED, LoanException.LOAN_LIMIT_EXCEEDED_EXTENDED);
         default:
-            return new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED);
+            return new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
         }
     }
 
@@ -108,7 +108,7 @@ public class LoanServiceImpl implements LoanService {
                 loanRepository.deleteById(id);
                 return new StatusResponse(StatusResponse.OK_REQUEST_MSG, DELETE_SUCCESSFUL_EXTENDED_MSG);
             } catch (Exception ex) {
-                return new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED);
+                return new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
             }
         }
     }

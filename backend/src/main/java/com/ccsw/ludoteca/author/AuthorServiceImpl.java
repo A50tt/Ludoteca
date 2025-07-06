@@ -3,7 +3,7 @@ package com.ccsw.ludoteca.author;
 import com.ccsw.ludoteca.author.model.Author;
 import com.ccsw.ludoteca.author.model.AuthorDto;
 import com.ccsw.ludoteca.author.model.AuthorSearchDto;
-import com.ccsw.ludoteca.common.exception.CommonException;
+import com.ccsw.ludoteca.common.exception.CommonErrorResponse;
 import com.ccsw.ludoteca.dto.StatusResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
@@ -60,10 +60,14 @@ public class AuthorServiceImpl implements AuthorService {
      * {@inheritDoc}
      */
     @Override
-    public StatusResponse save(Long id, AuthorDto dto) {
+    public StatusResponse save(Long id, AuthorDto dto) throws Exception {
         // Se ha introducido un 'Author' sin 'name' o 'nationality'
-        if (dto.getName().isEmpty() || dto.getNationality().isEmpty()) {
-            return new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED);
+        try {
+            if (dto.getName().isEmpty() || dto.getNationality().isEmpty()) {
+                return new StatusResponse(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
+            }
+        } catch (NullPointerException ex1) {
+            throw new AuthorException(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
         }
 
         // Tenemos en cuenta si es edición o creación de 'Autor' para devolver el mensaje correspondiente.
@@ -90,7 +94,7 @@ public class AuthorServiceImpl implements AuthorService {
             }
             return new StatusResponse(StatusResponse.OK_REQUEST_MSG, CREATION_SUCCESSFUL_EXT_MSG);
         } catch (Exception ex) {
-            return new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED);
+            throw new AuthorException(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
         }
     }
 
@@ -99,22 +103,20 @@ public class AuthorServiceImpl implements AuthorService {
      */
     @Override
     public StatusResponse delete(Long id) throws Exception {
-
-        // Check if author exists
+        // Check if 'Author' exists
         if (authorRepository.findById(id).isEmpty()) {
-            return new StatusResponse(AuthorException.AUTHOR_ID_NOT_FOUND, AuthorException.AUTHOR_ID_NOT_FOUND_EXTENDED);
+            throw new AuthorException(AuthorException.AUTHOR_ID_NOT_FOUND, AuthorException.AUTHOR_ID_NOT_FOUND_EXTENDED);
         }
         if (helper.findGamesByAuthor(id)) {
-            return new StatusResponse(AuthorException.AUTHOR_HAS_GAMES, AuthorException.AUTHOR_HAS_GAMES_EXTENDED);
-
+            throw new AuthorException(AuthorException.AUTHOR_HAS_GAMES, AuthorException.AUTHOR_HAS_GAMES_EXTENDED);
         }
         try {
             authorRepository.deleteById(id);
             return new StatusResponse(StatusResponse.OK_REQUEST_MSG, DELETE_SUCCESSFUL_EXT_MSG);
         } catch (NullPointerException ex1) {
-            return new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED);
+            throw new AuthorException(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
         } catch (Exception e) {
-            return new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED);
+            throw new AuthorException(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
         }
     }
 }

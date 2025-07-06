@@ -45,7 +45,7 @@ public interface AuthorService {
      * @param dto datos de la entidad
      * @return ResponseEntity - Respuesta {@link StatusResponse} del servidor.
      */
-    StatusResponse save(Long id, AuthorDto dto);
+    StatusResponse save(Long id, AuthorDto dto) throws Exception;
 
     /**
      * Método para crear o actualizar un {@link Author}

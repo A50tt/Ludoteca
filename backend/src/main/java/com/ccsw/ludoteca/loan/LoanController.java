@@ -1,7 +1,7 @@
 package com.ccsw.ludoteca.loan;
 
 import com.ccsw.ludoteca.client.model.Client;
-import com.ccsw.ludoteca.common.exception.CommonException;
+import com.ccsw.ludoteca.common.exception.CommonErrorResponse;
 import com.ccsw.ludoteca.dto.StatusResponse;
 import com.ccsw.ludoteca.game.model.Game;
 import com.ccsw.ludoteca.loan.model.Loan;
@@ -104,9 +104,9 @@ public class LoanController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
         } catch (NullPointerException | DataIntegrityViolationException | HttpMessageNotReadableException | InvalidDataAccessApiUsageException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED));
         } catch (Exception ex2) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED));
         }
     }
 
@@ -127,9 +127,9 @@ public class LoanController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
         } catch (NullPointerException ex1) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED));
         } catch (Exception ex2) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED));
         }
     }
 }

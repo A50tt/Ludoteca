@@ -3,7 +3,7 @@ package com.ccsw.ludoteca.game;
 import com.ccsw.ludoteca.author.AuthorService;
 import com.ccsw.ludoteca.category.CategoryService;
 import com.ccsw.ludoteca.common.criteria.SearchCriteria;
-import com.ccsw.ludoteca.common.exception.CommonException;
+import com.ccsw.ludoteca.common.exception.CommonErrorResponse;
 import com.ccsw.ludoteca.dto.StatusResponse;
 import com.ccsw.ludoteca.game.model.Game;
 import com.ccsw.ludoteca.game.model.GameDto;
@@ -47,7 +47,7 @@ public class GameServiceImpl implements GameService {
     public StatusResponse save(Long id, GameDto dto) {
         // Se ha introducido un Game sin 'title', 'age', 'Category' o 'Author'
         if (dto.getTitle().isEmpty() || dto.getAge() == null || dto.getCategory().getId() == null || dto.getAuthor().getId() == null) {
-            return new StatusResponse(CommonException.MISSING_REQUIRED_FIELDS, CommonException.MISSING_REQUIRED_FIELDS_EXTENDED);
+            return new StatusResponse(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
         }
 
         // Tenemos en cuenta si es edición o creación de 'Game' para devolver el StatusResponse con body correspondiente.
@@ -75,7 +75,7 @@ public class GameServiceImpl implements GameService {
             }
             return new StatusResponse(StatusResponse.OK_REQUEST_MSG, CREATION_SUCCESSFUL_EXT_MSG);
         } catch (Exception ex) {
-            return new StatusResponse(CommonException.DEFAULT_ERROR, CommonException.DEFAULT_ERROR_EXTENDED);
+            return new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
         }
     }
 }

@@ -12,4 +12,14 @@ public class AuthorException extends Exception {
     public static String AUTHOR_HAS_GAMES = "AUTHOR_HAS_GAMES";
     public static String AUTHOR_HAS_GAMES_EXTENDED = "No se puede borrar el autor debido a que tiene juegos registrados a su nombre.";
 
+    public String extendedMessage;
+
+    public AuthorException(String error, String extendedMessage) {
+        super(error);
+        this.extendedMessage = extendedMessage;
+    }
+
+    public String getExtendedMessage() {
+        return extendedMessage;
+    }
 }

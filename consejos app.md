@@ -34,27 +34,25 @@ Fecha de devoluciones anterior que se rehaga la de inicio. ✔️
 
 material icons theme -> Extensión para iconos en VS Code ✔️
 
+localhost que se configure -> Configurado dinámicamente en environment file. ✔️
+
 
 
 ##### Jerarquía de archivos
 
-debajo de Loans
+debajo de Loans ✔️
 
-components, views, services
+components, views, services ✔️
 
-loan list -> view
+loan list -> view ✔️
 
-loan edit -> component
+loan edit -> component ✔️
 
-model o types
+model o types ✔️
 
 
 
 ## BACK-END
-
-localhost que se configure
-
-Loan
 
 
 

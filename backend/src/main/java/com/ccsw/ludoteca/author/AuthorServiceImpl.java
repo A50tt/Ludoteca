@@ -45,7 +45,6 @@ public class AuthorServiceImpl implements AuthorService {
      */
     @Override
     public List<Author> findAll() {
-
         return (List<Author>) this.authorRepository.findAll();
     }
 
@@ -54,7 +53,6 @@ public class AuthorServiceImpl implements AuthorService {
      */
     @Override
     public Page<Author> findPage(AuthorSearchDto dto) {
-
         return this.authorRepository.findAll(dto.getPageable().getPageable());
     }
 

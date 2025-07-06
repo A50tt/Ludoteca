@@ -137,7 +137,7 @@ public class LoanServiceImpl implements LoanService {
             return LoanException.GAME_ALREADY_LENT;
         }
 
-        // El 'Client' tiene prestados más de 2 'Games' en un mismo día del período => ERROR
+        // El 'Client' tiene prestados más de MAX_GAMES_PER_CLIENT 'Games' en un mismo día del período => ERROR
         List<Loan> loansSamePeriodSameClient = this.loanRepository.findAll(startDateSpec.and(endDateSpec).and(clientSpec));
         if (loansSamePeriodSameClient.size() >= MAX_GAMES_PER_CLIENT) {
             return LoanException.LOAN_LIMIT_EXCEEDED;

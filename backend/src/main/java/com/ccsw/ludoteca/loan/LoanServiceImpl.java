@@ -1,7 +1,7 @@
 package com.ccsw.ludoteca.loan;
 
 import com.ccsw.ludoteca.common.criteria.SearchCriteria;
-import com.ccsw.ludoteca.common.exception.CommonErrorResponse;
+import com.ccsw.ludoteca.exception.CommonErrorResponse;
 import com.ccsw.ludoteca.dto.StatusResponse;
 import com.ccsw.ludoteca.loan.model.Loan;
 import com.ccsw.ludoteca.loan.model.LoanDto;
@@ -68,11 +68,16 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public StatusResponse save(LoanDto dto) {
+    public StatusResponse save(LoanDto dto) throws LoanException {
         // Se ha introducido un Loan sin 'Client', 'Game', 'startDate' o 'endDate'
-        if (dto.getStartDate() == null || dto.getEndDate() == null || dto.getClient() == null || dto.getGame() == null) {
-            return new StatusResponse(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
+        try {
+            if (dto.getStartDate() == null || dto.getEndDate() == null || dto.getClient() == null || dto.getGame() == null) {
+                throw new NullPointerException();
+            }
+        } catch (NullPointerException ex) {
+            throw new LoanException(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
         }
+
         // Debido a la cantidad de validaciones, se hacen en un método externo para tener un código más modularizable.
         switch (validate(dto)) {
         case VALIDATED_REQUEST:
@@ -82,33 +87,33 @@ public class LoanServiceImpl implements LoanService {
                 this.loanRepository.save(loan);
                 return new StatusResponse(StatusResponse.OK_REQUEST_MSG, SAVED_SUCCESSFUL_EXTENDED_MSG);
             } catch (InvalidDataAccessApiUsageException ex1) {
-                return new StatusResponse(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
+                throw new LoanException(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
             } catch (Exception ex2) {
-                return new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
+                throw new LoanException(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
             }
         case LoanException.INVALID_END_DATE:
-            return new StatusResponse(LoanException.INVALID_END_DATE, LoanException.INVALID_END_DATE_EXTENDED);
+            throw new LoanException(LoanException.INVALID_END_DATE, LoanException.INVALID_END_DATE_EXTENDED);
         case LoanException.INVALID_PERIOD:
-            return new StatusResponse(LoanException.INVALID_PERIOD, LoanException.INVALID_PERIOD_EXTENDED);
+            throw new LoanException(LoanException.INVALID_PERIOD, LoanException.INVALID_PERIOD_EXTENDED);
         case LoanException.GAME_ALREADY_LENT:
-            return new StatusResponse(LoanException.GAME_ALREADY_LENT, LoanException.GAME_ALREADY_LENT_EXTENDED);
+            throw new LoanException(LoanException.GAME_ALREADY_LENT, LoanException.GAME_ALREADY_LENT_EXTENDED);
         case LoanException.LOAN_LIMIT_EXCEEDED:
-            return new StatusResponse(LoanException.LOAN_LIMIT_EXCEEDED, LoanException.LOAN_LIMIT_EXCEEDED_EXTENDED);
+            throw new LoanException(LoanException.LOAN_LIMIT_EXCEEDED, LoanException.LOAN_LIMIT_EXCEEDED_EXTENDED);
         default:
-            return new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
+            throw new LoanException(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
         }
     }
 
     @Override
-    public StatusResponse delete(Long id) {
+    public StatusResponse delete(Long id) throws LoanException {
         if (this.get(id) == null) {
-            return new StatusResponse(LoanException.ID_NOT_EXIST, LoanException.ID_NOT_EXIST_EXTENDED);
+            throw new LoanException(LoanException.ID_NOT_EXIST, LoanException.ID_NOT_EXIST_EXTENDED);
         } else {
             try {
                 loanRepository.deleteById(id);
                 return new StatusResponse(StatusResponse.OK_REQUEST_MSG, DELETE_SUCCESSFUL_EXTENDED_MSG);
             } catch (Exception ex) {
-                return new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
+                throw new LoanException(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
             }
         }
     }

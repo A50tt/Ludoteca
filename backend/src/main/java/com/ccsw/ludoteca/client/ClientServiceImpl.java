@@ -3,7 +3,7 @@ package com.ccsw.ludoteca.client;
 import com.ccsw.ludoteca.client.model.Client;
 import com.ccsw.ludoteca.client.model.ClientDto;
 import com.ccsw.ludoteca.common.criteria.SearchCriteria;
-import com.ccsw.ludoteca.common.exception.CommonErrorResponse;
+import com.ccsw.ludoteca.exception.CommonErrorResponse;
 import com.ccsw.ludoteca.dto.StatusResponse;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -53,11 +53,16 @@ public class ClientServiceImpl implements ClientService {
      * {@inheritDoc}
      */
     @Override
-    public StatusResponse save(Long id, ClientDto dto) {
+    public StatusResponse save(Long id, ClientDto dto) throws ClientException {
         // Se ha introducido un 'Client' sin 'name'
-        if (dto.getName().isEmpty()) {
-            return new StatusResponse(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
+        try {
+            if (dto.getName().isEmpty()) {
+                throw new NullPointerException();
+            }
+        } catch (NullPointerException ex) {
+            throw new ClientException(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
         }
+
 
         // Tenemos en cuenta si es edición o creación de 'Client' para devolver el mensaje correspondiente.
         Client client;
@@ -72,7 +77,7 @@ public class ClientServiceImpl implements ClientService {
             if (listaClientes.get(0).getId().equals(dto.getId())) {
                 return new StatusResponse(StatusResponse.OK_REQUEST_MSG, EDIT_SUCCESSFUL_EXT_MSG);
             }
-            return new StatusResponse(ClientException.NAME_ALREADY_EXISTS, ClientException.NAME_ALREADY_EXISTS_EXTENDED);
+            throw new ClientException(ClientException.NAME_ALREADY_EXISTS, ClientException.NAME_ALREADY_EXISTS_EXTENDED);
         }
 
         // Recuperamos un 'Client' con ese 'id' en la BBDD si existe y definimos la operación como UPDATE.
@@ -89,36 +94,31 @@ public class ClientServiceImpl implements ClientService {
         BeanUtils.copyProperties(dto, client, "id");
         client.setName(dto.getName());
 
-        try {
-            this.clientRepository.save(client); // Si da Exception o no y según UPDATE, devuelve un body u otro.
-            if (isUpdate) {
-                return new StatusResponse(StatusResponse.OK_REQUEST_MSG, EDIT_SUCCESSFUL_EXT_MSG);
-            }
-            return new StatusResponse(StatusResponse.OK_REQUEST_MSG, CREATION_SUCCESSFUL_EXT_MSG);
-        } catch (Exception ex) {
-            return new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
+        this.clientRepository.save(client); // Si da Exception o no y según UPDATE, devuelve un body u otro.
+        if (isUpdate) {
+            return new StatusResponse(StatusResponse.OK_REQUEST_MSG, EDIT_SUCCESSFUL_EXT_MSG);
         }
+        return new StatusResponse(StatusResponse.OK_REQUEST_MSG, CREATION_SUCCESSFUL_EXT_MSG);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public StatusResponse delete(Long id) {
+    public StatusResponse delete(Long id) throws ClientException {
         // Busca si el 'Client' existe realmente en la BBDD.
         if (clientRepository.findById(id).isEmpty()) {
-            return new StatusResponse(ClientException.CLIENT_ID_NOT_FOUND, ClientException.CLIENT_ID_NOT_FOUND_EXTENDED);
-
+            throw new ClientException(ClientException.CLIENT_ID_NOT_FOUND, ClientException.CLIENT_ID_NOT_FOUND_EXTENDED);
         }
         // Busca si este 'Client' tiene 'Loan's registrados a su nombre antes de hacer delete.
         if (helper.findLoansByClient(id)) {
-            return new StatusResponse(ClientException.CLIENT_HAS_GAMES, ClientException.CLIENT_HAS_GAMES_EXTENDED);
+            throw new ClientException(ClientException.CLIENT_HAS_GAMES, ClientException.CLIENT_HAS_GAMES_EXTENDED);
         }
         try {
             clientRepository.deleteById(id);
             return new StatusResponse(StatusResponse.OK_REQUEST_MSG, DELETE_SUCCESSFUL_EXT_MSG);
         } catch (Exception e) {
-            return new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
+            throw new ClientException(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
         }
     }
 }

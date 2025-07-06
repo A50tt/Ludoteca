@@ -20,4 +20,15 @@ public class LoanException extends Exception {
 
     public static final String ID_NOT_EXIST = "ERROR_ID_DOES_NOT_EXIST";
     public static final String ID_NOT_EXIST_EXTENDED = "El ID proporcionado no existe en la base de datos.";
+
+    public String extendedMessage;
+
+    public LoanException(String error, String extendedMessage) {
+        super(error);
+        this.extendedMessage = extendedMessage;
+    }
+
+    public String getExtendedMessage() {
+        return extendedMessage;
+    }
 }

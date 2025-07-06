@@ -2,7 +2,7 @@ package com.ccsw.ludoteca.category;
 
 import com.ccsw.ludoteca.category.model.Category;
 import com.ccsw.ludoteca.category.model.CategoryDto;
-import com.ccsw.ludoteca.common.exception.CommonErrorResponse;
+import com.ccsw.ludoteca.exception.CommonErrorResponse;
 import com.ccsw.ludoteca.dto.StatusResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
@@ -52,10 +52,14 @@ public class CategoryServiceImpl implements CategoryService {
      * {@inheritDoc}
      */
     @Override
-    public StatusResponse save(Long id, CategoryDto dto) {
+    public StatusResponse save(Long id, CategoryDto dto) throws CategoryException {
         // Se ha introducido un Category sin 'name'
-        if (dto.getName().isEmpty()) {
-            return new StatusResponse(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
+        try {
+            if (dto.getName().isEmpty()) {
+                throw new NullPointerException();
+            }
+        } catch (NullPointerException ex) {
+            throw new CategoryException(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
         }
 
         // Tenemos en cuenta si es edición o creación de 'Category' para devolver el mensaje correspondiente.
@@ -82,7 +86,7 @@ public class CategoryServiceImpl implements CategoryService {
             }
             return new StatusResponse(StatusResponse.OK_REQUEST_MSG, CREATION_SUCCESSFUL_EXT_MSG);
         } catch (Exception ex) {
-            return new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
+            throw new CategoryException(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
         }
     }
 
@@ -90,17 +94,17 @@ public class CategoryServiceImpl implements CategoryService {
      * {@inheritDoc}
      */
     @Override
-    public StatusResponse delete(Long id) throws Exception {
+    public StatusResponse delete(Long id) throws CategoryException {
         if (this.get(id) == null) {
-            return new StatusResponse(CategoryException.CATEGORY_ID_NOT_FOUND, CategoryException.CATEGORY_ID_NOT_FOUND_EXTENDED);
+            throw new CategoryException(CategoryException.CATEGORY_ID_NOT_FOUND, CategoryException.CATEGORY_ID_NOT_FOUND_EXTENDED);
         } else if (helper.findGamesByCategory(id)) {
-            return new StatusResponse(CategoryException.CATEGORY_HAS_GAMES, CategoryException.CATEGORY_HAS_GAMES_EXTENDED);
+            throw new CategoryException(CategoryException.CATEGORY_HAS_GAMES, CategoryException.CATEGORY_HAS_GAMES_EXTENDED);
         }
         try {
             categoryRepository.deleteById(id);
             return new StatusResponse(StatusResponse.OK_REQUEST_MSG, DELETE_SUCCESSFUL_EXT_MSG);
         } catch (Exception e) {
-            return new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
+            throw new CategoryException(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
         }
     }
 }

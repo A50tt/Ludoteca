@@ -64,7 +64,7 @@ public class AuthorController {
      */
     @Operation(summary = "Save or Update", description = "Method that saves or updates a Author")
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
-    public ResponseEntity<StatusResponse> save(@PathVariable(name = "id", required = false) Long id, @RequestBody AuthorDto dto) throws AuthorException, Exception {
+    public ResponseEntity<StatusResponse> save(@PathVariable(name = "id", required = false) Long id, @RequestBody AuthorDto dto) throws AuthorException {
         return ResponseEntity.status(HttpStatus.OK).body(this.authorService.save(id, dto));
     }
 
@@ -76,7 +76,7 @@ public class AuthorController {
      */
     @Operation(summary = "Delete", description = "Method that deletes a Author")
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<StatusResponse> delete(@PathVariable("id") Long id) throws Exception {
+    public ResponseEntity<StatusResponse> delete(@PathVariable("id") Long id) throws AuthorException {
         return ResponseEntity.status(HttpStatus.OK).body(this.authorService.delete(id));
     }
 }

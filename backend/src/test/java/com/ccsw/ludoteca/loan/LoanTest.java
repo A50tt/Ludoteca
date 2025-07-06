@@ -1,7 +1,7 @@
 package com.ccsw.ludoteca.loan;
 
 import com.ccsw.ludoteca.client.model.Client;
-import com.ccsw.ludoteca.common.exception.GlobalExceptionHandler;
+import com.ccsw.ludoteca.exception.GlobalExceptionHandler;
 import com.ccsw.ludoteca.dto.StatusResponse;
 import com.ccsw.ludoteca.game.model.Game;
 import com.ccsw.ludoteca.loan.model.Loan;

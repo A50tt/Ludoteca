@@ -3,10 +3,11 @@ package com.ccsw.ludoteca.game;
 import com.ccsw.ludoteca.author.AuthorService;
 import com.ccsw.ludoteca.category.CategoryService;
 import com.ccsw.ludoteca.common.criteria.SearchCriteria;
-import com.ccsw.ludoteca.common.exception.CommonErrorResponse;
+import com.ccsw.ludoteca.exception.CommonErrorResponse;
 import com.ccsw.ludoteca.dto.StatusResponse;
 import com.ccsw.ludoteca.game.model.Game;
 import com.ccsw.ludoteca.game.model.GameDto;
+import com.ccsw.ludoteca.game.model.GameException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -44,11 +45,16 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public StatusResponse save(Long id, GameDto dto) {
+    public StatusResponse save(Long id, GameDto dto) throws GameException {
         // Se ha introducido un Game sin 'title', 'age', 'Category' o 'Author'
-        if (dto.getTitle().isEmpty() || dto.getAge() == null || dto.getCategory().getId() == null || dto.getAuthor().getId() == null) {
-            return new StatusResponse(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
+        try {
+            if (dto.getTitle().isEmpty() || dto.getAge() == null || dto.getCategory().getId() == null || dto.getAuthor().getId() == null) {
+                throw new NullPointerException();
+            }
+        } catch (NullPointerException ex) {
+            throw new GameException(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
         }
+
 
         // Tenemos en cuenta si es edición o creación de 'Game' para devolver el StatusResponse con body correspondiente.
         Game game;
@@ -75,7 +81,7 @@ public class GameServiceImpl implements GameService {
             }
             return new StatusResponse(StatusResponse.OK_REQUEST_MSG, CREATION_SUCCESSFUL_EXT_MSG);
         } catch (Exception ex) {
-            return new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
+            throw new GameException(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED);
         }
     }
 }

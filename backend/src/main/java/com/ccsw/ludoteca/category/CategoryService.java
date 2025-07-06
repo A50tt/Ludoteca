@@ -2,6 +2,7 @@ package com.ccsw.ludoteca.category;
 
 import com.ccsw.ludoteca.category.model.Category;
 import com.ccsw.ludoteca.category.model.CategoryDto;
+import com.ccsw.ludoteca.client.ClientException;
 import com.ccsw.ludoteca.dto.StatusResponse;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public interface CategoryService {
      * @param dto datos de la entidad
      * @return ResponseEntity - Respuesta {@link StatusResponse} del servidor.
      */
-    StatusResponse save(Long id, CategoryDto dto);
+    StatusResponse save(Long id, CategoryDto dto) throws CategoryException;
 
     /**
      * Método para borrar una {@link Category}
@@ -43,6 +44,6 @@ public interface CategoryService {
      * @param id PK de la entidad
      * @return ResponseEntity - Respuesta {@link StatusResponse} del servidor.
      */
-    StatusResponse delete(Long id) throws Exception;
+    StatusResponse delete(Long id) throws CategoryException;
 
 }

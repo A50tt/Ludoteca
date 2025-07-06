@@ -3,7 +3,7 @@ package com.ccsw.ludoteca.author;
 import com.ccsw.ludoteca.author.model.Author;
 import com.ccsw.ludoteca.author.model.AuthorDto;
 import com.ccsw.ludoteca.author.model.AuthorSearchDto;
-import com.ccsw.ludoteca.common.exception.CommonErrorResponse;
+import com.ccsw.ludoteca.exception.CommonErrorResponse;
 import com.ccsw.ludoteca.dto.StatusResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
@@ -60,13 +60,13 @@ public class AuthorServiceImpl implements AuthorService {
      * {@inheritDoc}
      */
     @Override
-    public StatusResponse save(Long id, AuthorDto dto) throws Exception {
+    public StatusResponse save(Long id, AuthorDto dto) throws AuthorException {
         // Se ha introducido un 'Author' sin 'name' o 'nationality'
         try {
             if (dto.getName().isEmpty() || dto.getNationality().isEmpty()) {
                 return new StatusResponse(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
             }
-        } catch (NullPointerException ex1) {
+        } catch (NullPointerException ex) {
             throw new AuthorException(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED);
         }
 
@@ -102,7 +102,7 @@ public class AuthorServiceImpl implements AuthorService {
      * {@inheritDoc}
      */
     @Override
-    public StatusResponse delete(Long id) throws Exception {
+    public StatusResponse delete(Long id) throws AuthorException {
         // Check if 'Author' exists
         if (authorRepository.findById(id).isEmpty()) {
             throw new AuthorException(AuthorException.AUTHOR_ID_NOT_FOUND, AuthorException.AUTHOR_ID_NOT_FOUND_EXTENDED);

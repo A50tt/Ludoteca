@@ -56,17 +56,19 @@ model o types ✔️
 
 
 
-Model decide
-
-Controller gestione el mensaje
+Global exception handler a nivel SpringBootApplication ✔️
 
 
 
-Global exception handler a nivel SpringBootApplication
+create exception folder on main level ✔️
 
 
 
 mocks -> Factory para tests mirate la web:
 
 https://refactoring.guru
+
+
+
+
 

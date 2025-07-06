@@ -1,13 +1,12 @@
 package com.ccsw.ludoteca.game;
 
-import com.ccsw.ludoteca.common.exception.CommonErrorResponse;
 import com.ccsw.ludoteca.dto.StatusResponse;
 import com.ccsw.ludoteca.game.model.Game;
 import com.ccsw.ludoteca.game.model.GameDto;
+import com.ccsw.ludoteca.game.model.GameException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -56,18 +55,7 @@ public class GameController {
      */
     @Operation(summary = "Save or Update", description = "Method that saves or updates a Game")
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
-    public ResponseEntity<StatusResponse> save(@PathVariable(name = "id", required = false) Long id, @RequestBody GameDto dto) {
-        try {
-            StatusResponse response = gameService.save(id, dto); // No se ha informado de 'edad', 'Category' o 'Author'
-            if (response.getMessage().equals(StatusResponse.OK_REQUEST_MSG)) {
-                return ResponseEntity.status(HttpStatus.OK).body(response);
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }
-        } catch (NullPointerException | DataIntegrityViolationException ex1) { // No se ha introducido 'title'
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StatusResponse(CommonErrorResponse.MISSING_REQUIRED_FIELDS, CommonErrorResponse.MISSING_REQUIRED_FIELDS_EXTENDED));
-        } catch (Exception ex2) { // Exception catch por defecto.
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new StatusResponse(CommonErrorResponse.DEFAULT_ERROR, CommonErrorResponse.DEFAULT_ERROR_EXTENDED));
-        }
+    public ResponseEntity<StatusResponse> save(@PathVariable(name = "id", required = false) Long id, @RequestBody GameDto dto) throws GameException {
+        return ResponseEntity.status(HttpStatus.OK).body(gameService.save(id, dto));
     }
 }

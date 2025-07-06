@@ -3,6 +3,7 @@ package com.ccsw.ludoteca.game;
 import com.ccsw.ludoteca.dto.StatusResponse;
 import com.ccsw.ludoteca.game.model.Game;
 import com.ccsw.ludoteca.game.model.GameDto;
+import com.ccsw.ludoteca.game.model.GameException;
 
 import java.util.List;
 
@@ -29,6 +30,6 @@ public interface GameService {
      * @param dto datos de la entidad
      * @return ResponseEntity - Respuesta {@link StatusResponse} del servidor.
      */
-    StatusResponse save(Long id, GameDto dto);
+    StatusResponse save(Long id, GameDto dto) throws GameException;
 
 }

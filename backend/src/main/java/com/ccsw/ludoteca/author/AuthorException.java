@@ -3,7 +3,6 @@ package com.ccsw.ludoteca.author;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
 public class AuthorException extends Exception {
 
     public static String AUTHOR_ID_NOT_FOUND = "AUTHOR_ID_NOT_FOUND";

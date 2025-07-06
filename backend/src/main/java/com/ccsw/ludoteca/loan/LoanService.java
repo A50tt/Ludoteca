@@ -53,7 +53,7 @@ public interface LoanService {
      * @param loanDto {@link Loan} a guardar.
      * @return ResponseEntity - Respuesta {@link StatusResponse} del servidor.
      */
-    public StatusResponse save(LoanDto loanDto);
+    public StatusResponse save(LoanDto loanDto) throws LoanException;
 
     /**
      * Comprueba que el {@link Loan} con el {@code id} proporcionado existe in the database.
@@ -63,5 +63,5 @@ public interface LoanService {
      * @param id - Id del {@link Loan}.
      * @return ResponseEntity - Respuesta {@link StatusResponse} del servidor.
      */
-    public StatusResponse delete(Long id);
+    public StatusResponse delete(Long id) throws LoanException;
 }

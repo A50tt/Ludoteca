@@ -1,4 +1,4 @@
-package com.ccsw.ludoteca.common.exception;
+package com.ccsw.ludoteca.exception;
 
 import com.ccsw.ludoteca.dto.StatusResponse;
 

@@ -81,26 +81,28 @@ export class LoanEditComponent implements OnInit {
   }
 
   onSave() {
-    // Si startDate o endDate no están definidos por el usuario, fuerza el validation check y no envía al servidor.
-    if (!this.loan.startDate || !this.loan.endDate) {
-      const startDateInput = document.querySelector('[name="startDate"]') as HTMLElement;
-      const endDateInput = document.querySelector('[name="endDate"]') as HTMLElement;
+    if (!this.dateMaxLengthError) {
+      // Si startDate o endDate no están definidos por el usuario, fuerza el validation check y no envía al servidor.
+      if (!this.loan.startDate || !this.loan.endDate) {
+        const startDateInput = document.querySelector('[name="startDate"]') as HTMLElement;
+        const endDateInput = document.querySelector('[name="endDate"]') as HTMLElement;
 
-      startDateInput?.focus();
-      startDateInput?.blur();
+        startDateInput?.focus();
+        startDateInput?.blur();
 
-      endDateInput?.focus();
-      endDateInput?.blur();
-    } else {
-      this.loanService.saveLoan(this.loan).subscribe({
-        next: (result) => {
-          this.alertService.success(result.extendedMessage);
-          this.dialogRef.close();
-        },
-        error: (err) => {
-          this.errDialogService.openMsgErrorDialog(err.error.message, err.error.extendedMessage);
-        }
-      });
+        endDateInput?.focus();
+        endDateInput?.blur();
+      } else {
+        this.loanService.saveLoan(this.loan).subscribe({
+          next: (result) => {
+            this.alertService.success(result.extendedMessage);
+            this.dialogRef.close();
+          },
+          error: (err) => {
+            this.errDialogService.openMsgErrorDialog(err.error.message, err.error.extendedMessage);
+          }
+        });
+      }
     }
   }
 
@@ -114,7 +116,7 @@ export class LoanEditComponent implements OnInit {
       this.dateMaxLengthError = false;
       return;
     }
-    
+
     // startDate mayor que endDate? Aumenta endDate a startDate.
     const startDate = (this.loan.startDate as any)?.toDate ? (this.loan.startDate as any).toDate() : new Date(this.loan.startDate);
     const endDate = (this.loan.endDate as any)?.toDate ? (this.loan.endDate as any).toDate() : new Date(this.loan.endDate);
@@ -146,7 +148,7 @@ export class LoanEditComponent implements OnInit {
       this.dateMaxLengthError = false;
       return;
     }
-    
+
     // Más de 14 días de préstamo?
     const daysDifference = DateUtils.getDaysDifference(this.loan.startDate, this.loan.endDate);
     if (daysDifference > LoanEditComponent.MAX_DAYS_OF_LOAN) {
